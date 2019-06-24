@@ -1,5 +1,15 @@
-# Smart-Career Scraper v1.3
+# Smart-Career Scraper v1.4
 
+## Changelog v1.4:
+### Additions:
++ Everyone is now connected to the company repository
+### Changes:
++ Config file can now take multiple job searches (one job per line).
++ Moved "main" to its own function to allow for this.
++ Capped page search to 5 for now so session is not kicked.
++ Seperated each script into its own folder.
+### Removals:
++ My old repository (Still there, just not in use)
 
 ## Changelog v1.3:
 ### Additions:
