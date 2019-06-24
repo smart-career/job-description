@@ -6,6 +6,7 @@ import json
 import pprint
 from selenium import webdriver
 from datetime import datetime
+from datetime import date
 from pymongo import MongoClient
 
 # REPLACE With your LinkedIn Credentials
@@ -40,21 +41,26 @@ def clean_item(item):
 
 
 def generate_scrape_url(scrape_url):
-    title = input("Enter job title: ")
+
+    #Reads in the config file so input is automatic.
+    with open("cfg.txt") as newFile:
+        configArray = newFile.readlines()
+
+    title = configArray[0]
     print('\nSelect period from the given options. Type 1, 2, 3 or 4 and press ENTER')
     print('1. Past 24 Hours')
     print('2. Past Week')
     print('3. Past Month')
     print('4. Anytime')
-    period = '1'
-    uname = 'bsong7003@gmail.com'
-    passwd = 'Belsong0!'
+    period = int(configArray[1])
+    uname = configArray[2]
+    passwd = configArray[3]
 
 #    period = input("Period: ")
 #    uname = input("Username: ")
 #    passwd = input("Password: ")
 
-    while not period.isnumeric() or not 0 < int(period) < 5:
+    while not 0 < int(period) < 5:
         print('\nERROR: Invalid Input. Try again.')
         period = input("Period: ")
 
@@ -83,23 +89,24 @@ if "__main__":
     all_jobs = []
     job_postings = []
     page = 1
+    jCount = 0
 
     job_search_url, filename, USERNAME, PASSWORD = generate_scrape_url(base_url)
 
     print('\nSTATUS: Opening website')
     browser = webdriver.Chrome(chrome_driver)
     browser.get(sign_in_url)
-    time.sleep(1)
+    time.sleep(2)
 
     print('STATUS: Signing in')
     browser.find_element_by_id('username').send_keys(USERNAME)
-    time.sleep(1)
+    time.sleep(2)
 
     browser.find_element_by_id('password').send_keys(PASSWORD)
-    time.sleep(1)
+    time.sleep(2)
 
     browser.find_element_by_class_name('login__form_action_container ').click()
-    time.sleep(1)
+    time.sleep(2)
 
     print('STATUS: Searching for jobs\n')
     browser.get(job_search_url)
@@ -131,7 +138,9 @@ if "__main__":
 
             current_url = browser.current_url
             job_id = current_url[current_url.find('currentJobId=') + 13: current_url.find('currentJobId=') + 23]
+            dateCaptured = str(date.today())
             obj['JobID'] = job_id
+            obj['Date Captured'] = dateCaptured
 
             job_div = None
             while True:
@@ -199,7 +208,6 @@ if "__main__":
         if len(jobs) == 0:
             break
 
-    print('\nSTATUS: Scraping complete. Check output file for scraped data')
     print('STATUS: Press any key to exit scraper')
     browser.quit()
     exit = input('')
