@@ -1,6 +1,9 @@
-System Analyst
+Data Engineer
 Data Scientist
 Software Engineer
+Project Management
+UX/UI Designer
+Web Developer
 1
 bsong7003@gmail.com
 Belsong0!

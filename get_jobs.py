@@ -4,7 +4,6 @@ import sys
 import time
 import json
 import pprint
-import schedule
 from selenium import webdriver
 from datetime import datetime
 from datetime import date
@@ -121,7 +120,7 @@ def scrape(jobList, configArray):
 
     all_jobs = jobs
 
-    while True and page != 3:
+    while True and page != 5:
         print('STATUS: Scraping Page ' + str(page))
         index = 0
         while index < len(jobs):
@@ -212,18 +211,19 @@ if "__main__":
         configArray = newFile.readlines()
 
     jobList = []
-    
-    for l in configArray:
-        tempStr = configArray[0]
-        if tempStr.isdigit():
-            print(configArray[0])
+    tempStr = ""
+
+    while len(configArray) > 0:
+        try:
+            int(configArray[0])
             break
-        else:
+        except:
             jobList.append(configArray[0])
             del configArray[0]
 
-    # Searches multiple jobs at once.
+    # Searches multiple jobs in a row.
     for x in range(len(jobList)):
+        print("Now scraping:", jobList[0])
         scrape(jobList[0], configArray)
         time.sleep(5)
         del jobList[0]
