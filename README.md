@@ -1,4 +1,19 @@
-# Smart-Career Scraper v1.1
+# Smart-Career Scraper v1.3
+
+
+## Changelog v1.3:
+### Additions:
++ Integration with the 2 new scripts.
++ Date Captured works for get_jobs, but not get_people not sure why.
++ Input is now automatic, to change, refer to the cfg.txt file.
+  The first line is for the job title, the second line is period,
+  the third and fourth lines are username and password respectively.
+### Changes:
++ Config file changed to accomodate for login ID and password (Slots 2 and 3)
++ Period is now daily by default.
++ Script runs as long as it needs to, no hard limit unless I need to test.
+### Removals:
++ The 2 old scripts, which have been replaced by these new ones.
 
 ## Changelog v1.2:
 ### Additions:
@@ -7,7 +22,7 @@
 + Added a config file where the first line = job description and second line = period
 ### Changes:
 + No longer takes user input. Use config file instead.
-### Removals (Just commented out):
+### Removals:
 + None
 
 ## Changelog v1.1:
