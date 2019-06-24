@@ -4,6 +4,7 @@ import sys
 import time
 import json
 import pprint
+import schedule
 from selenium import webdriver
 from datetime import datetime
 from datetime import date
@@ -40,21 +41,17 @@ def clean_item(item):
     return item
 
 
-def generate_scrape_url(scrape_url):
+def generate_scrape_url(scrape_url, jobList, configArray):
 
-    #Reads in the config file so input is automatic.
-    with open("cfg.txt") as newFile:
-        configArray = newFile.readlines()
-
-    title = configArray[0]
+    title = jobList
     print('\nSelect period from the given options. Type 1, 2, 3 or 4 and press ENTER')
     print('1. Past 24 Hours')
     print('2. Past Week')
     print('3. Past Month')
     print('4. Anytime')
-    period = int(configArray[1])
-    uname = configArray[2]
-    passwd = configArray[3]
+    period = int(configArray[0])
+    uname = configArray[1]
+    passwd = configArray[2]
 
 #    period = input("Period: ")
 #    uname = input("Username: ")
@@ -76,12 +73,10 @@ def generate_scrape_url(scrape_url):
 
     valid_title_name = title.strip().replace(' ', '_')
     valid_title_name = re.sub(r'(?u)[^-\w.]', '', valid_title_name)
-    output_filename = valid_title_name + '_' + datetime.today().strftime("%Y%m%d") + '.json'
 
-    return scrape_url, output_filename, uname, passwd
+    return scrape_url, uname, passwd
 
-
-if "__main__":
+def scrape(jobList, configArray):
     chrome_driver = os.getcwd() + "/chromedriver.exe"
     base_url = "https://www.linkedin.com/jobs/search?keywords="
     sign_in_url = "https://www.linkedin.com/uas/login?fromSignIn=true"
@@ -91,7 +86,7 @@ if "__main__":
     page = 1
     jCount = 0
 
-    job_search_url, filename, USERNAME, PASSWORD = generate_scrape_url(base_url)
+    job_search_url, USERNAME, PASSWORD = generate_scrape_url(base_url, jobList, configArray)
 
     print('\nSTATUS: Opening website')
     browser = webdriver.Chrome(chrome_driver)
@@ -126,7 +121,7 @@ if "__main__":
 
     all_jobs = jobs
 
-    while True:
+    while True and page != 3:
         print('STATUS: Scraping Page ' + str(page))
         index = 0
         while index < len(jobs):
@@ -207,10 +202,32 @@ if "__main__":
 
         if len(jobs) == 0:
             break
+    
+    browser.quit()
+  
+
+if "__main__":
+    # Reads in the config file so input is automatic.
+    with open("cfg.txt") as newFile:
+        configArray = newFile.readlines()
+
+    jobList = []
+    
+    for l in configArray:
+        tempStr = configArray[0]
+        if tempStr.isdigit():
+            print(configArray[0])
+            break
+        else:
+            jobList.append(configArray[0])
+            del configArray[0]
+
+    # Searches multiple jobs at once.
+    for x in range(len(jobList)):
+        scrape(jobList[0], configArray)
+        time.sleep(5)
+        del jobList[0]
 
     print('STATUS: Press any key to exit scraper')
-    browser.quit()
     exit = input('')
     sys.exit(0)
-
-
