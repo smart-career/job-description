@@ -1,4 +1,11 @@
-# Smart-Career Scraper v1.4
+# Smart-Career Scraper v1.5
+
+## Changelog v1.4:
+### Additions:
+### Changes:
++ Changed scheduler to update the database everyday at noon.
++ Capped page search to 3x5 jobs so 15 in total to not be kicked.
+### Removals:
 
 ## Changelog v1.4:
 ### Additions:
