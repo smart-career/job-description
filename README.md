@@ -1,6 +1,6 @@
 # Smart-Career Scraper v1.5
 
-## Changelog v1.4:
+## Changelog v1.5:
 ### Additions:
 ### Changes:
 + Changed scheduler to update the database everyday at noon.
