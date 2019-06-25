@@ -1,4 +1,4 @@
-# This program will activate the script to run once a day.
+# This program will activate the script to run once a day at noon.
 import os
 import schedule
 import time
@@ -6,7 +6,7 @@ import time
 def script():
     os.system('python get_jobs.py')
 
-schedule.every().day.do(script)
+schedule.every().day.at("12:00").do(script)
 
 while 1:
     schedule.run_pending()
