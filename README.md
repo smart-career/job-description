@@ -2,7 +2,8 @@
 
 ## Changelog v1.4:
 ### Additions:
-+ Everyone is now connected to the company repository
++ Everyone is now connected to the company repository.
++ *NEW* file: scheduler.py that, when run, will run get_jobs.py once a day.
 ### Changes:
 + Config file can now take multiple job searches (one job per line).
 + Moved "main" to its own function to allow for this.

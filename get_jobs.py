@@ -120,7 +120,7 @@ def scrape(jobList, configArray):
 
     all_jobs = jobs
 
-    while True and page != 5:
+    while True and page != 3:
         print('STATUS: Scraping Page ' + str(page))
         index = 0
         while index < len(jobs):
@@ -228,6 +228,5 @@ if "__main__":
         time.sleep(5)
         del jobList[0]
 
-    print('STATUS: Press any key to exit scraper')
-    exit = input('')
+    print("Daily automation has been completed.")
     sys.exit(0)
