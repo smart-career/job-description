@@ -131,7 +131,7 @@ def scrape(jobList, configArray):
 
     all_jobs = jobs
 
-    while True and page != 5:
+    while True and page != 6:
         print('STATUS: Scraping Page ' + str(page))
         index = 0
         while index < len(jobs):
