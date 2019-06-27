@@ -1,4 +1,11 @@
-# Smart-Career Scraper v1.5
+# Smart-Career Scraper v1.6
+
+## Changelog v1.6:
+### Additions:
++ Now outputs a .txt file with # of documents inserted.
+### Changes:
++ Changed page limit from 5 to 6. (Slowly increasing to see how far we can go).
+### Removals:
 
 ## Changelog v1.5:
 ### Additions:
