@@ -9,6 +9,9 @@ from datetime import datetime
 from datetime import date
 from pymongo import MongoClient
 
+# Global Variable
+docNum = 0
+
 # REPLACE With your LinkedIn Credentials
 USERNAME = ""
 PASSWORD = ""
@@ -27,8 +30,10 @@ def mongodb_put_doc(doc):
     col=mongodb_get_collection(db,'jobdescription')
 
     try:
+        global docNum
         re=col.insert_one(doc)
         ret=re.inserted_id
+        docNum += 1
     except:
         ret=doc['JobID']
           
@@ -115,12 +120,18 @@ def scrape(jobList, configArray):
             if len(jobs) == 0:
                 print('STATUS: No jobs found. Press any key to exit scraper')
                 browser.quit()
+                print("Check docnum.txt for # of documents submitted!")
+                today = datetime.now()
+                f = open("docnum.txt","w+")
+                f.write("Ran:", str(today))
+                f.write("Number of documents submitted:", (docNum))
+                f.close()
                 exit = input('')
                 sys.exit(0)
 
     all_jobs = jobs
 
-    while True and page != 3:
+    while True and page != 5:
         print('STATUS: Scraping Page ' + str(page))
         index = 0
         while index < len(jobs):
@@ -187,9 +198,6 @@ def scrape(jobList, configArray):
  #           job_postings.append(obj)
  #           main_obj['postings'] = job_postings
 
- #           with open(filename, 'w', encoding='utf-8') as outfile:
- #               json.dump(job_postings, outfile, indent=2, ensure_ascii=False)
-
             jobs = browser.find_elements_by_xpath("//li[@class='occludable-update artdeco-list__item p0 ember-view']")
             index += 1
 
@@ -228,5 +236,15 @@ if "__main__":
         time.sleep(5)
         del jobList[0]
 
-    print("Daily automation has been completed.")
+    print("Daily automation has been completed for: get_jobs.py")
+    print("Check docnum.txt for # of documents submitted!")
+    today = datetime.now()
+    f = open("docnum.txt","w+")
+    f.write("Ran:\n")
+    f.write(str(today))
+    f.write("\nNumber of documents submitted:\n")
+    f.write(str(docNum))
+    f.write("\n")
+    f.close()
+
     sys.exit(0)
