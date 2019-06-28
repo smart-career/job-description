@@ -1,4 +1,14 @@
-# Smart-Career Scraper v1.6
+# Smart-Career Scraper v1.7
+
+## Changelog v1.7:
+### Additions:
+### Changes:
++ Mr. Song fixed a bug with the period time not being correctly added to the scrape_url.
++ Mr. Song also took out the page restriction.
++ Changed formatting of output file.
++ Swapped run times of scheduler.py and pscheduler.py as get_jobs.py will take longer to run now.
+### Removals:
++ Removed stuff about the period and the old output.json code as they are unecessary.
 
 ## Changelog v1.6:
 ### Additions:
