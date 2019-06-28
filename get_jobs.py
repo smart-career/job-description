@@ -47,12 +47,11 @@ def clean_item(item):
 
 def generate_scrape_url(scrape_url, jobList, configArray):
 
-    title = jobList
- #   print('\nSelect period from the given options. Type 1, 2, 3 or 4 and press ENTER')
  #   print('1. Past 24 Hours')
  #   print('2. Past Week')
  #   print('3. Past Month')
  #   print('4. Anytime')
+    title = jobList
     period = int(configArray[0])
     uname = configArray[1]
     passwd = configArray[2]
@@ -119,14 +118,18 @@ def scrape(jobList, configArray):
                 print("Check docnum.txt for # of documents submitted!")
                 today = datetime.now()
                 f = open("docnum.txt","w+")
-                f.write("Ran:", str(today))
-                f.write("Number of documents submitted:", (docNum))
+                f.write("Ran:\n")
+                f.write(str(today))
+                f.write("\n")
+                f.write("\nNumber of documents submitted:\n")
+                f.write(str(docNum))
                 f.close()
                 exit = input('')
                 sys.exit(0)
 
     all_jobs = jobs
 
+    #Scrapes until the list of jobs is exhausted.
     while True:
         print('STATUS: Scraping Page ' + str(page))
         index = 0
@@ -238,9 +241,9 @@ if "__main__":
     f = open("docnum.txt","w+")
     f.write("Ran:\n")
     f.write(str(today))
+    f.write("\n")
     f.write("\nNumber of documents submitted:\n")
     f.write(str(docNum))
-    f.write("\n")
     f.close()
 
     sys.exit(0)

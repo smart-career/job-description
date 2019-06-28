@@ -6,7 +6,7 @@ import time
 def script():
     os.system('python get_jobs.py')
 
-schedule.every().day.at("12:00").do(script)
+schedule.every().day.at("14:00").do(script)
 
 while 1:
     schedule.run_pending()
