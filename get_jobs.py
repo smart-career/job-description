@@ -71,8 +71,6 @@ def generate_scrape_url(scrape_url, jobList, configArray):
 
     scrape_url += '&location=United States'
 
-    print ('scrap url: %s' % scrape_url)
-
     valid_title_name = title.strip().replace(' ', '_')
     valid_title_name = re.sub(r'(?u)[^-\w.]', '', valid_title_name)
 
