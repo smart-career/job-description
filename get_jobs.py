@@ -48,32 +48,30 @@ def clean_item(item):
 def generate_scrape_url(scrape_url, jobList, configArray):
 
     title = jobList
-    print('\nSelect period from the given options. Type 1, 2, 3 or 4 and press ENTER')
-    print('1. Past 24 Hours')
-    print('2. Past Week')
-    print('3. Past Month')
-    print('4. Anytime')
+ #   print('\nSelect period from the given options. Type 1, 2, 3 or 4 and press ENTER')
+ #   print('1. Past 24 Hours')
+ #   print('2. Past Week')
+ #   print('3. Past Month')
+ #   print('4. Anytime')
     period = int(configArray[0])
     uname = configArray[1]
     passwd = configArray[2]
-
-#    period = input("Period: ")
-#    uname = input("Username: ")
-#    passwd = input("Password: ")
 
     while not 0 < int(period) < 5:
         print('\nERROR: Invalid Input. Try again.')
         period = input("Period: ")
 
     scrape_url += title
-    if period == '1':
+    if period == 1:
         scrape_url += '&f_TPR=r86400'
-    elif period == '2':
+    elif period == 2:
         scrape_url += '&f_TPR=r604800'
-    elif period == '3':
+    elif period == 3:
         scrape_url += '&f_TPR=r2592000'
 
     scrape_url += '&location=United States'
+
+    print ('scrap url: %s' % scrape_url)
 
     valid_title_name = title.strip().replace(' ', '_')
     valid_title_name = re.sub(r'(?u)[^-\w.]', '', valid_title_name)
@@ -131,7 +129,7 @@ def scrape(jobList, configArray):
 
     all_jobs = jobs
 
-    while True and page != 6:
+    while True:
         print('STATUS: Scraping Page ' + str(page))
         index = 0
         while index < len(jobs):
