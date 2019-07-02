@@ -1,6 +1,13 @@
-# Smart-Career Scraper v1.7
+# Smart-Career Scraper v1.8
 
-## Changelog v1.7:
+## Changelog v1.8:
+### Additions:
++ Added get_indeedjobs.py *Not Finished* (Currently stuck on job iteration) 
+### Changes:
++ Changed scheduler to 11 am
+### Removals:
+
+## Changelog v1.8:
 ### Additions:
 ### Changes:
 + Mr. Song fixed a bug with the period time not being correctly added to the scrape_url.
