@@ -1,4 +1,12 @@
-# Smart-Career Scraper v1.8
+# Smart-Career Scraper v1.9
+
+## Changelog v1.9:
+### Additions:
++ jobs.json A file exported with all the documents we have on MongoDB at the present.
++ similarsearch.py Which finds all instances of similar words and outputs statistics about them.
+  E.G.: Typing in jobs.json then Company then Amazon will yield 4 different variants of the company Amazon.
+### Changes:
+### Removals:
 
 ## Changelog v1.8:
 ### Additions:
