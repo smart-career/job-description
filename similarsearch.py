@@ -25,11 +25,12 @@ def main():
     # Use some natural language processing to extract unique values and insert
     # into a dictionary. if there are equivalent values, increase that specific counter.
     for i in newList:
-        subStart = i.index(field)
+        subStart = i.index('\"'+field+'\"')
         subEnd = i.index('\",\"', subStart)
         compName = i[subStart:subEnd]
         cStart = compName.index(':\"')
         cleanName = compName[cStart+2:]
+
         if cleanName in similarCount:
             similarCount[cleanName] = similarCount.get(cleanName) + 1
         else :
