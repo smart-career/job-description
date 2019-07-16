@@ -1,4 +1,18 @@
-# Smart-Career Scraper v1.9
+# Smart-Career Scraper v2.0
+
+## Changelog v2.0:
+### Additions/Changes
++ New jobs.json that has all 6,995 documents. The previous version did not have all documents exported.
++ Fixed a bug where if the job title had "Company" in it, the parser would incorrectly try to index there.
++ Fixed bug where the sum of the word counts would not match the total number of lines.
++ Added nicer formatting of output. (Rounded decimal to 2 places, nicely done columns)
++ Added some pre-processing to the description analyzer to remove stop words and punctuation.
++ Fixed a bug where the description via location could not be parsed.
+### Removals:
++ jsonconverter.py as this went nowhere
+### To do:
++ Additional pre-processing
++ Graphs and more statistics for the presentation
 
 ## Changelog v1.9:
 ### Additions:
