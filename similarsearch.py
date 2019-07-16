@@ -12,21 +12,31 @@ def main():
     # Take in the 3 user inputs (file, field, word to search for)
     newFile = input("What is the file name? ")
     field = string.capwords(input("What is the field you are looking for? "))
-    newText = string.capwords(input("What is the text you are looking for? "))
+    newText = string.capwords(input("What is the text you are looking for? \nType 'All+' for all unique words of that topic.\n"))
+    print()
     fieldText = field + "\"" + ":" + "\"" + newText
 
     lineCount = 0
     newList = []
 
     # Open a file and parse through each line and add it to a list.
-    with open(newFile, encoding="utf8") as thisFile:
-        for line in thisFile:
-            if fieldText in line:
+    if newText == "All+":
+        with open(newFile, encoding="utf8") as thisFile:
+            for line in thisFile:
                 newList.append(line)
                 lineCount += 1
 
+    else: 
+        with open(newFile, encoding="utf8") as thisFile:
+            for line in thisFile:
+                if fieldText in line:
+                    newList.append(line)
+                    lineCount += 1
+
     similarCount = {}
     descCount = {}
+
+    
 
     # Take each document and find words or phrases similar to it.
     # If there are equivalent values, increase the counter for that specific word.
@@ -60,7 +70,7 @@ def main():
     for key,val in sorted(descCount.items(), key = lambda kv:(kv[1], kv[0]), reverse = True)[0:10]:
         print("{:3s} Word: {:20s} Count: {:4d}".format(str(count)+".","\""+key+"\"",val))
         count += 1
-
+    
 # Use some natural language processing to extract unique words
 # from the document's description and insert it into a dictionary.
 def descriptionParser(line, descCount):
