@@ -40,18 +40,24 @@ def main():
     # Take each document and find words or phrases similar to it.
     # If there are equivalent values, increase the counter for that specific word.
     for i in newList:
-        subStart = i.index('\"' + field + '\"')
-        subEnd = i.find('\",\"', subStart)
-        compName = i[subStart:subEnd]
-        cStart = compName.index(':\"')
-        cleanName = compName[cStart+2:]
-
-        if cleanName in similarCount:
-            similarCount[cleanName] = similarCount.get(cleanName) + 1
-        else :
-            similarCount[cleanName] = 1
+        try :
+            subStart = i.index('\"' + field + '\"')
+            subEnd = i.find('\",\"', subStart)
+            if i[subEnd - 1] == "}":
+                compName = i[subStart:subEnd - 2]
+            else:
+                compName = i[subStart:subEnd]
+            cStart = compName.index(':\"')
+            cleanName = compName[cStart + 2:]
+            if cleanName in similarCount:
+                similarCount[cleanName] = similarCount.get(cleanName) + 1
+            else :
+                similarCount[cleanName] = 1
+            
+            descriptionParser(i, descCount)
         
-        descriptionParser(i, descCount)
+        except:
+            continue
 
     print("Results:")
     print("Total Found:", lineCount,"\n")
@@ -64,7 +70,7 @@ def main():
 
     print("\nThese are the top ten words for this topic:\n")
 
-    #Print the top 10 words in the descriptions of a certain job or topic.
+    # Print the top 10 words in the descriptions of a certain job or topic.
     count = 1
     for key,val in sorted(descCount.items(), key = lambda kv:(kv[1], kv[0]), reverse = True)[0:10]:
         print("{:3s} Word: {:20s} Count: {:4d}".format(str(count)+".","\""+key+"\"",val))
@@ -77,7 +83,7 @@ def descriptionParser(line, descCount):
     descEnd = line.find('\",\"', descStart)
     descName = line[descStart:descEnd]
     descFull = descName.index(':\"')
-    cleanDesc = descName[descFull+2:]
+    cleanDesc = descName[descFull + 2:]
     temp = punctuationRemover(cleanDesc)
     splitDesc = tokenize(temp)
     splitDesc = [item.lower() for item in splitDesc]
