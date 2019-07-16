@@ -13,6 +13,7 @@
 ### To do:
 + Additional pre-processing
 + Graphs and more statistics for the presentation
++ Fix case-sensitive bug
 
 ## Changelog v1.9:
 ### Additions:
