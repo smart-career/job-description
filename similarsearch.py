@@ -1,5 +1,5 @@
 # David Son 7/12/19
-# This program takes in a file, a field, and a word to search for
+# This program takes in a MongoDB .json export file, a field, and a word to search for
 # and outputs all similar words or phrases and displays the top 10
 # words found within the related descriptions.
 
@@ -11,14 +11,14 @@ import re
 def main():
     # Take in the 3 user inputs (file, field, word to search for)
     newFile = input("What is the file name? ")
-    field = input("What is the field you are looking for? ")
-    newText = input("What is the text you are looking for? ")
+    field = string.capwords(input("What is the field you are looking for? "))
+    newText = string.capwords(input("What is the text you are looking for? "))
     fieldText = field + "\"" + ":" + "\"" + newText
 
     lineCount = 0
     newList = []
 
-    # Open a file and parse through each document and add it to a list.
+    # Open a file and parse through each line and add it to a list.
     with open(newFile, encoding="utf8") as thisFile:
         for line in thisFile:
             if fieldText in line:
@@ -28,9 +28,8 @@ def main():
     similarCount = {}
     descCount = {}
 
-    # Use some natural language processing to extract unique words and insert
-    # into a dictionary. If there are equivalent values, increase the counter
-    # for that specific word.
+    # Take each document and find words or phrases similar to it.
+    # If there are equivalent values, increase the counter for that specific word.
     for i in newList:
         subStart = i.index('\"' + field + '\"')
         subEnd = i.find('\",\"', subStart)
@@ -43,23 +42,8 @@ def main():
         else :
             similarCount[cleanName] = 1
         
-        descStart = i.index('\"Description\"')
-        descEnd = i.find('\",\"', descStart)
-        descName = i[descStart:descEnd]
-        descFull = descName.index(':\"')
-        cleanDesc = descName[descFull+2:]
-        temp = punctuationRemover(cleanDesc)
-        splitDesc = tokenize(temp)
-        temp2 = removeStop(splitDesc)
+        descriptionParser(i, descCount)
 
-        # Get a count of important words within each related description.
-        for j in temp2:
-            if j in descCount:
-                descCount[j] = descCount.get(j) + 1
-            else :
-                descCount[j] = 1
-
-    print("\nFinished parsing data.\n")
     print("Results:")
     print("Total Found:", lineCount,"\n")
     print("All similar texts:\n")
@@ -76,6 +60,26 @@ def main():
     for key,val in sorted(descCount.items(), key = lambda kv:(kv[1], kv[0]), reverse = True)[0:10]:
         print("{:3s} Word: {:20s} Count: {:4d}".format(str(count)+".","\""+key+"\"",val))
         count += 1
+
+# Use some natural language processing to extract unique words
+# from the document's description and insert it into a dictionary.
+def descriptionParser(line, descCount):
+    descStart = line.index('\"Description\"')
+    descEnd = line.find('\",\"', descStart)
+    descName = line[descStart:descEnd]
+    descFull = descName.index(':\"')
+    cleanDesc = descName[descFull+2:]
+    temp = punctuationRemover(cleanDesc)
+    splitDesc = tokenize(temp)
+    splitDesc = [item.lower() for item in splitDesc]
+    temp2 = removeStop(splitDesc)
+
+    # Get a count of important words within each related description.
+    for j in temp2:
+        if j in descCount:
+            descCount[j] = descCount.get(j) + 1
+        else :
+            descCount[j] = 1
 
 # NLP that removes all punctuation.
 def punctuationRemover(description):
