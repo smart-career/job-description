@@ -1,9 +1,12 @@
 # David Son 7/12/19
-# This program takes an input of the field and
-# text to search for and outputs all similar
-# versions of that word.
+# This program takes in a file, a field, and a word to search for
+# and outputs all similar words or phrases and displays the top 10
+# words found within the related descriptions.
 
 import decimal
+import nltk
+import string
+import re
 
 def main():
     # Take in the 3 user inputs (file, field, word to search for)
@@ -25,11 +28,12 @@ def main():
     similarCount = {}
     descCount = {}
 
-    # Use some natural language processing to extract unique values and insert
-    # into a dictionary. if there are equivalent values, increase that specific counter.
+    # Use some natural language processing to extract unique words and insert
+    # into a dictionary. If there are equivalent values, increase the counter
+    # for that specific word.
     for i in newList:
         subStart = i.index('\"' + field + '\"')
-        subEnd = i.index('\",\"', subStart)
+        subEnd = i.find('\",\"', subStart)
         compName = i[subStart:subEnd]
         cStart = compName.index(':\"')
         cleanName = compName[cStart+2:]
@@ -39,15 +43,17 @@ def main():
         else :
             similarCount[cleanName] = 1
         
-        descStart = i.index('\"Description\":')
-        descEnd = i.index('\",\"', descStart)
+        descStart = i.index('\"Description\"')
+        descEnd = i.find('\",\"', descStart)
         descName = i[descStart:descEnd]
         descFull = descName.index(':\"')
         cleanDesc = descName[descFull+2:]
-        splitDesc = cleanDesc.split(' ')
+        temp = punctuationRemover(cleanDesc)
+        splitDesc = tokenize(temp)
+        temp2 = removeStop(splitDesc)
 
-        # Get a count of important words within each description.
-        for j in splitDesc:
+        # Get a count of important words within each related description.
+        for j in temp2:
             if j in descCount:
                 descCount[j] = descCount.get(j) + 1
             else :
@@ -56,19 +62,35 @@ def main():
     print("\nFinished parsing data.\n")
     print("Results:")
     print("Total Found:", lineCount,"\n")
-    print("All similar words:\n")
+    print("All similar texts:\n")
 
     # Print out each dictionary item and how many times it was found/percentage of all
     # documents with that word or phrase.
     for key,val in sorted(similarCount.items(), key = lambda kv:(kv[1], kv[0]), reverse = True):
-        print("Word: {:30s} Count: {:4d} Ratio: {:4s}".format(key,val,str(round(((val/lineCount)*100),2))+"%"))
+        print("Ratio: {:7s} Count: {:<5d} Text: {:40s}".format(str(round(((val/lineCount)*100),2))+"%",val, key))
 
     print("\nThese are the top ten words for this topic:\n")
 
     #Print the top 10 words in the descriptions of a certain job or topic.
     count = 1
     for key,val in sorted(descCount.items(), key = lambda kv:(kv[1], kv[0]), reverse = True)[0:10]:
-        print("{:3s} Word: {:10s} Count: {:4d}".format(str(count)+".","\""+key+"\"",val))
+        print("{:3s} Word: {:20s} Count: {:4d}".format(str(count)+".","\""+key+"\"",val))
         count += 1
+
+# NLP that removes all punctuation.
+def punctuationRemover(description):
+    noPunctuation = "".join([char for char in description if char not in string.punctuation])
+    return noPunctuation
+
+# NLP that splits words by space.
+def tokenize(temp):
+    tokens = re.split(r'\W+', temp)
+    return tokens
+
+# NLP that removes clutter words such as 'by' and 'and'.
+def removeStop(splitDesc):
+    stopword = nltk.corpus.stopwords.words('english')
+    returnText = [word for word in splitDesc if word not in stopword]
+    return returnText
 
 main()
