@@ -19,13 +19,14 @@ def main():
     lineCount = 0
     newList = []
 
-    # Open a file and parse through each line and add it to a list.
+    # Open a file and parse all lines and add to list.
     if newText == "All+":
         with open(newFile, encoding="utf8") as thisFile:
             for line in thisFile:
                 newList.append(line)
                 lineCount += 1
 
+    # Open a file and parse through lines, only adding lines that have the key word/phrase included.
     else: 
         with open(newFile, encoding="utf8") as thisFile:
             for line in thisFile:
@@ -35,8 +36,6 @@ def main():
 
     similarCount = {}
     descCount = {}
-
-    
 
     # Take each document and find words or phrases similar to it.
     # If there are equivalent values, increase the counter for that specific word.
