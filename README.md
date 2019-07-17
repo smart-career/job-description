@@ -14,6 +14,8 @@ field and text input.
 + Indeed script
 + TBD
 + Colored output?
++ Grouping of similar texts
++ Graph visualization
 
 ## Changelog v2.0:
 ### Additions/Changes
