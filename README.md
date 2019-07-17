@@ -16,6 +16,7 @@ field and text input.
 + Colored output?
 + Grouping of similar texts
 + Graph visualization
++ Connect to MongoDB so it runs faster
 
 ## Changelog v2.0:
 ### Additions/Changes
