@@ -27,7 +27,7 @@ def main():
             for line in thisFile:
                 newList.append(line)
                 lineCount += 1
-                varSearch(newList, lineCount, field)
+            varSearch(newList, lineCount, field)
 
     # Open a file and parse through lines, only adding lines that have the key word/phrase included.
     else: 
@@ -61,12 +61,19 @@ def varSearch(newList, lineCount, field):
                 similarCount[cleanName] = 1
                 if len(similarCount) > 0:
                     match = SequenceMatcher(None, cleanName, list(similarCount.keys())[-2]).find_longest_match(0, len(cleanName), 0, len(list(similarCount.keys())[-2]))
-                    if match[2] > 3:
-                        pureName = cleanName[match.a: match.a + match.size].strip()
+                    for key in similarCount.keys():
+                        tMatch = SequenceMatcher(None, cleanName, key).find_longest_match(0, len(cleanName), 0, len(key))
+                        if tMatch[2] < match[2]:
+                            match = tMatch
+                    if match[2] > 5:
+                        pureName = punctuationRemover(cleanName[match.a: match.a + match.size])
+                        pureName = pureName.strip()
                         if pureName in groupCount:
                             groupCount[pureName] = groupCount[pureName] + 1
                         else:
                             groupCount[pureName] = 2
+                    else:
+                        continue
             
             descriptionParser(i, descCount)
         
