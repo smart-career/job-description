@@ -8,6 +8,7 @@ import nltk
 import string
 import re
 
+# Choose a function based on user input.
 def main():
     # Take in the 3 user inputs (file, field, word to search for)
     newFile = input("What is the file name? ")
@@ -25,6 +26,7 @@ def main():
             for line in thisFile:
                 newList.append(line)
                 lineCount += 1
+            varSearch(newList, lineCount, field)
 
     # Open a file and parse through lines, only adding lines that have the key word/phrase included.
     else: 
@@ -33,12 +35,14 @@ def main():
                 if fieldText in line:
                     newList.append(line)
                     lineCount += 1
+            varSearch(newList, lineCount, field)
 
+# Take each document and find words or phrases similar to it.
+# If there are equivalent values, increase the counter for that specific word.
+def varSearch(newList, lineCount, field):
     similarCount = {}
     descCount = {}
 
-    # Take each document and find words or phrases similar to it.
-    # If there are equivalent values, increase the counter for that specific word.
     for i in newList:
         try :
             subStart = i.index('\"' + field + '\"')
@@ -56,6 +60,7 @@ def main():
             
             descriptionParser(i, descCount)
         
+        # Skip this document since the field does not exist for it.
         except:
             continue
 
@@ -75,6 +80,7 @@ def main():
     for key,val in sorted(descCount.items(), key = lambda kv:(kv[1], kv[0]), reverse = True)[0:10]:
         print("{:3s} Word: {:20s} Count: {:4d}".format(str(count)+".","\""+key+"\"",val))
         count += 1
+    exit()
     
 # Use some natural language processing to extract unique words
 # from the document's description and insert it into a dictionary.
