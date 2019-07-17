@@ -1,4 +1,19 @@
-# Smart-Career Scraper v2.0
+# Smart-Career Scraper v2.1
+
+## Changelog v2.1:
+### Additions/Changes
++ Fixed case sensitive bug on input. The program will now automatically capitalize the first letter for each letter of
+field and text input.
++ Program now makes all words lowercase post tokenization to avoid duplicates in the top 10 section (Capital and lowercase words would be considered seperate)
++ Moved the description extractor to its own function.
++ Typing in "All+" in the text section will output count/unique words for all documents not just those that have a certain word or phrase.
++ Fixed bug where if a certain field didn't exist the program would crash. Now skips over lines that don't have a specific field type.
++ Fixed bug where if a certain field was the last thing on the line, the text returned would have a bracket.
+### Removals:
+### To do:
++ Indeed script
++ TBD
++ Colored output?
 
 ## Changelog v2.0:
 ### Additions/Changes
