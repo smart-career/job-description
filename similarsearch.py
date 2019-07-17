@@ -7,6 +7,7 @@ import decimal
 import nltk
 import string
 import re
+from difflib import SequenceMatcher
 
 # Choose a function based on user input.
 def main():
@@ -26,7 +27,7 @@ def main():
             for line in thisFile:
                 newList.append(line)
                 lineCount += 1
-            varSearch(newList, lineCount, field)
+                varSearch(newList, lineCount, field)
 
     # Open a file and parse through lines, only adding lines that have the key word/phrase included.
     else: 
@@ -42,6 +43,7 @@ def main():
 def varSearch(newList, lineCount, field):
     similarCount = {}
     descCount = {}
+    groupCount = {}
 
     for i in newList:
         try :
@@ -55,8 +57,16 @@ def varSearch(newList, lineCount, field):
             cleanName = compName[cStart + 2:]
             if cleanName in similarCount:
                 similarCount[cleanName] = similarCount.get(cleanName) + 1
-            else :
+            else:
                 similarCount[cleanName] = 1
+                if len(similarCount) > 0:
+                    match = SequenceMatcher(None, cleanName, list(similarCount.keys())[-2]).find_longest_match(0, len(cleanName), 0, len(list(similarCount.keys())[-2]))
+                    if match[2] > 3:
+                        pureName = cleanName[match.a: match.a + match.size].strip()
+                        if pureName in groupCount:
+                            groupCount[pureName] = groupCount[pureName] + 1
+                        else:
+                            groupCount[pureName] = 2
             
             descriptionParser(i, descCount)
         
@@ -72,6 +82,12 @@ def varSearch(newList, lineCount, field):
     # documents with that word or phrase.
     for key,val in sorted(similarCount.items(), key = lambda kv:(kv[1], kv[0]), reverse = True):
         print("Ratio: {:7s} Count: {:<5d} Text: {:40s}".format(str(round(((val/lineCount)*100),2))+"%",val, key))
+    
+    print()
+    print("The group(s) of similar topics.\n")
+    # Print out each topic and how many variations they have each.
+    for key,val in sorted(groupCount.items(), key = lambda kv:(kv[1], kv[0]), reverse = True):
+        print("Group: {:40s} Variations: {:1d}".format(key, val))
 
     print("\nThese are the top ten words for this topic:\n")
 
