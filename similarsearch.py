@@ -8,6 +8,7 @@ import nltk
 import string
 import re
 from difflib import SequenceMatcher
+from nltk.stem import WordNetLemmatizer
 
 # Choose a function based on user input.
 def main():
@@ -71,6 +72,7 @@ def varSearch(newList, lineCount, field):
                         tMatch = SequenceMatcher(None, key, list(similarCount.keys())[-2]).find_longest_match(0, len(key), 0, len(list(similarCount.keys())[-2]))
                         if tMatch[2] < match[2]:
                             match = tMatch
+
                     if match[2] > 5:
                         pureName = punctuationRemover(cleanName[match.a: match.a + match.size])
                         pureName = pureName.strip()
@@ -129,15 +131,17 @@ def descriptionParser(line, descCount):
     splitDesc = tokenize(temp)
     splitDesc = [item.lower() for item in splitDesc]
     temp2 = removeStop(splitDesc)
+    temp3 = lemmatizer(temp2)
+    print(temp3)
 
     # Get a count of important words within each related description.
-    for j in temp2:
+    for j in temp3:
         if j in descCount:
             descCount[j] = descCount.get(j) + 1
         else :
             descCount[j] = 1
     
-    return temp2
+    return temp3
 
 # NLP that removes all punctuation.
 def punctuationRemover(description):
@@ -154,5 +158,11 @@ def removeStop(splitDesc):
     stopword = nltk.corpus.stopwords.words('english')
     returnText = [word for word in splitDesc if word not in stopword]
     return returnText
+
+def lemmatizer(temp2):
+    wn = WordNetLemmatizer()
+    textReturn = []
+    textReturn = [wn.lemmatize(word) for word in temp2]
+    return textReturn
 
 main()
