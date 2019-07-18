@@ -50,29 +50,36 @@ def varSearch(newList, lineCount, field):
         try :
             subStart = i.index('\"' + field + '\"')
             subEnd = i.find('\",\"', subStart)
+
             if i[subEnd - 1] == "}":
                 compName = i[subStart:subEnd - 2]
             else:
                 compName = i[subStart:subEnd]
+
             cStart = compName.index(':\"')
             cleanName = compName[cStart + 2:]
+
             if cleanName in similarCount:
                 similarCount[cleanName] = similarCount.get(cleanName) + 1
             else:
                 similarCount[cleanName] = 1
                 if len(similarCount) > 0:
                     match = SequenceMatcher(None, cleanName, list(similarCount.keys())[-2]).find_longest_match(0, len(cleanName), 0, len(list(similarCount.keys())[-2]))
+
+                    # Check the whole list for similar words and add to the group that is the shortest common subsequence of letters.
                     for key in similarCount.keys():
-                        tMatch = SequenceMatcher(None, cleanName, key).find_longest_match(0, len(cleanName), 0, len(key))
+                        tMatch = SequenceMatcher(None, key, list(similarCount.keys())[-2]).find_longest_match(0, len(key), 0, len(list(similarCount.keys())[-2]))
                         if tMatch[2] < match[2]:
                             match = tMatch
                     if match[2] > 5:
                         pureName = punctuationRemover(cleanName[match.a: match.a + match.size])
                         pureName = pureName.strip()
+
                         if pureName in groupCount:
                             groupCount[pureName] = groupCount[pureName] + 1
                         else:
                             groupCount[pureName] = 2
+
                     else:
                         continue
             
