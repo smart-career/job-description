@@ -44,6 +44,7 @@ def varSearch(newList, lineCount, field):
     similarCount = {}
     descCount = {}
     groupCount = {}
+    temp4 = []
 
     for i in newList:
         try :
@@ -75,7 +76,8 @@ def varSearch(newList, lineCount, field):
                     else:
                         continue
             
-            descriptionParser(i, descCount)
+            temp3 = descriptionParser(i, descCount)
+            temp4 = temp3 + temp4
         
         # Skip this document since the field does not exist for it.
         except:
@@ -103,6 +105,9 @@ def varSearch(newList, lineCount, field):
     for key,val in sorted(descCount.items(), key = lambda kv:(kv[1], kv[0]), reverse = True)[0:10]:
         print("{:3s} Word: {:20s} Count: {:4d}".format(str(count)+".","\""+key+"\"",val))
         count += 1
+
+    freq = nltk.FreqDist(temp4)
+    freq.plot(30, cumulative = False)
     exit()
     
 # Use some natural language processing to extract unique words
@@ -124,6 +129,8 @@ def descriptionParser(line, descCount):
             descCount[j] = descCount.get(j) + 1
         else :
             descCount[j] = 1
+    
+    return temp2
 
 # NLP that removes all punctuation.
 def punctuationRemover(description):
