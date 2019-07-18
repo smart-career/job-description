@@ -1,4 +1,19 @@
-# Smart-Career Scraper v2.1
+# Smart-Career Scraper v2.2
+
+## Changelog v2.2:
+### Additions/Changes
++ Moved the extractor to its own function just in case I want to add more features that aren't about that.
++ Added Grouping between the full extractor and the description extractor. The program will now group together certain topics and display how many variants there are.
++ Fixed bug where punctuation and spaces would mess up the grouping.
++ Fixed bug where the grouping would never grab the smallest possible string. (I.E. Software Engineer and Software Engineer Intern would be considered seperate).
++ Graph is now included at the end for top 10 description words!
+### Removals:
++ Pymongo connector as it did not help speed up the program or work correctly in general. Maybe revisit it a different time.
+### To do:
++ Group function takes an extremely long time for all 6,995 documents
++ Group function has unreliable output with All+
++ Grouping by location is a little weird not sure if fixable
++ Indeed Script
 
 ## Changelog v2.1:
 ### Additions/Changes
@@ -12,7 +27,6 @@ field and text input.
 ### Removals:
 ### To do:
 + Indeed script
-+ TBD
 + Colored output?
 + Grouping of similar texts
 + Graph visualization
