@@ -9,6 +9,7 @@ import string
 import re
 from difflib import SequenceMatcher
 from nltk.stem import WordNetLemmatizer
+from sklearn.feature_extraction.text import CountVectorizer
 
 # Choose a function based on user input.
 def main():
@@ -85,7 +86,7 @@ def varSearch(newList, lineCount, field):
                     else:
                         continue
             
-            temp3 = descriptionParser(i, descCount)
+            temp3, cleanDesc = descriptionParser(i, descCount)
             temp4 = temp3 + temp4
         
         # Skip this document since the field does not exist for it.
@@ -115,6 +116,7 @@ def varSearch(newList, lineCount, field):
         print("{:3s} Word: {:20s} Count: {:4d}".format(str(count)+".","\""+key+"\"",val))
         count += 1
 
+    # Frequency plot.
     freq = nltk.FreqDist(temp4)
     freq.plot(30, cumulative = False)
     exit()
@@ -128,11 +130,11 @@ def descriptionParser(line, descCount):
     descFull = descName.index(':\"')
     cleanDesc = descName[descFull + 2:]
     temp = punctuationRemover(cleanDesc)
+    temp = re.sub(r'\d+', '', temp)
     splitDesc = tokenize(temp)
     splitDesc = [item.lower() for item in splitDesc]
     temp2 = removeStop(splitDesc)
     temp3 = lemmatizer(temp2)
-    print(temp3)
 
     # Get a count of important words within each related description.
     for j in temp3:
@@ -141,7 +143,7 @@ def descriptionParser(line, descCount):
         else :
             descCount[j] = 1
     
-    return temp3
+    return temp3, cleanDesc
 
 # NLP that removes all punctuation.
 def punctuationRemover(description):
