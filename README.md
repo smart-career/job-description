@@ -1,4 +1,13 @@
-# Smart-Career Scraper v2.2
+# Smart-Career Scraper v2.3
+
+## Changelog v2.3:
+### Additions/Changes
++ Added lemmatization. Resulting graphs have shifted slightly.
++ Removed any numbers from description text for extra pre-processing
+### Removals:
+### To do:
++ Group function bug fixes... works fine with one topic but not multiple. Not sure how to proceed.
++ Indeed Script
 
 ## Changelog v2.2:
 ### Additions/Changes
