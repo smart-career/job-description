@@ -40,7 +40,7 @@ def mongodb_read_docs(col):
 
     try:
 
-        ret=col.find().limit(25)
+        ret=col.find().limit(50)
         
     except Exception as e:
         print(e)
@@ -136,5 +136,5 @@ if "__main__":
         print("Neo4j inserted: %s" % ret)
 
      
-
+    graphDB.close()
     print("completed")
