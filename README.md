@@ -1,4 +1,13 @@
-# Smart-Career Scraper v2.4
+# Smart-Career Scraper v2.5
+
+## Changelog v2.5:
+### Additions/Changes
++ Changed the node structures so we only need companies, locations, and job titles.
++ Fixed bug where some nodes would be blank instead of saying "not specified".
+### Removals:
+### To do:
++ Make it so location, company names, and job titles are standardized... maybe combine with similarsearch?
++ Trying to make similarsearch work with pymongo connection.
 
 ## Changelog v2.4:
 ### Additions/Changes
