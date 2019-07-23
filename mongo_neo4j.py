@@ -102,12 +102,15 @@ if "__main__":
         jobTitle=d['Job Title']
         company=d['Company']
         location=d.get('Location')
+        
         if location is "":
            location = "Not Specified"
         else:
             location = d['Location']
+
         seniority=d.get('Seniority Level')
-        if seniority is "":
+
+        if seniority is None:
            seniority = "Not Specified"
         else:
             seniority = d['Seniority Level']
