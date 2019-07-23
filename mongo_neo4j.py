@@ -49,9 +49,9 @@ def mongodb_read_docs(col):
 
 # Neo4j Functions
 def neo4j_init():
-    uri = "bolt://34.67.91.17"
+    uri = "bolt://localhost"
     userName = "neo4j"
-    passwd = "SmartCareer0!"
+    passwd = "Random1234"
     ndb=GraphDatabase.driver(uri, auth=(userName,passwd))
     return ndb
 
@@ -112,20 +112,11 @@ if "__main__":
         employmentType=d['Employment Type']
         jobFunction=d['Job Functions']
 
-        cqlNode="""Merge (j:`Job Title` {Name:'%s'})
-                 Merge (c:`Company` {Name:'%s'})
+        cqlNode="""Merge (j:`Job Title` {Name:'%s', Seniority:'%s', Job_Functions:'%s'})
+                 Merge (c:`Company` {Name:'%s', Employment_Type:'%s', Industry:'%s'})
                  Merge (l:`Location` {Name:'%s'})
-                 Merge (s:`Seniority Level` {Name:'%s'})
-                 Merge (i:`industry` {Name:'%s'})
-                 Merge (e:`Employment Type` {Name:'%s'})
-                 Merge (f:`Job Functions` {Name:'%s'})
-                 Merge (j)-[:OPENFOR]->(c)
-                 Merge (j)-[:LOCATEDAT]->(l)
-                 Merge (j)-[:SENIORITYLEVEL]->(s)
-                 Merge (j)-[:INDUSTRYOF]->(i)
-                 Merge (j)-[:EMPYMENTTYPE]->(e)
-                 Merge (j)-[:JOBFUNCTION]->(f)""" % (jobTitle,company,location,seniority,industry,employmentType,jobFunction)
-
+                 Merge (j)-[:JOBAT]->(c)
+                 Merge (j)-[:LOCATEDAT]->(l)""" % (jobTitle,seniority,jobFunction,company,employmentType,industry,location)
 
         try:
             ret=neo4j_merge(graphDB,cqlNode)
