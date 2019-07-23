@@ -49,9 +49,9 @@ def mongodb_read_docs(col):
 
 # Neo4j Functions
 def neo4j_init():
-    uri = "bolt://localhost"
+    uri = "bolt://34.67.91.17"
     userName = "neo4j"
-    passwd = "Random1234"
+    passwd = "SmartCareer0!"
     ndb=GraphDatabase.driver(uri, auth=(userName,passwd))
     return ndb
 
