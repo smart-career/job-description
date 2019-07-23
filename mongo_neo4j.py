@@ -101,9 +101,13 @@ if "__main__":
     for d in docs:
         jobTitle=d['Job Title']
         company=d['Company']
-        location=d['Location']
+        location=d.get('Location')
+        if location is "":
+           location = "Not Specified"
+        else:
+            location = d['Location']
         seniority=d.get('Seniority Level')
-        if seniority is None:
+        if seniority is "":
            seniority = "Not Specified"
         else:
             seniority = d['Seniority Level']
@@ -112,11 +116,11 @@ if "__main__":
         employmentType=d['Employment Type']
         jobFunction=d['Job Functions']
 
-        cqlNode="""Merge (j:`Job Title` {Name:'%s', Seniority:'%s', Job_Functions:'%s'})
-                 Merge (c:`Company` {Name:'%s', Employment_Type:'%s', Industry:'%s'})
+        cqlNode="""Merge (j:`Job Title` {Name:'%s', Seniority:'%s', Job_Functions:'%s', Employment_Type:'%s'})
+                 Merge (c:`Company` {Name:'%s',  Industry:'%s'})
                  Merge (l:`Location` {Name:'%s'})
                  Merge (j)-[:JOBAT]->(c)
-                 Merge (j)-[:LOCATEDAT]->(l)""" % (jobTitle,seniority,jobFunction,company,employmentType,industry,location)
+                 Merge (j)-[:LOCATEDAT]->(l)""" % (jobTitle,seniority,jobFunction,employmentType,company,industry,location)
 
         try:
             ret=neo4j_merge(graphDB,cqlNode)
