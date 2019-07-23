@@ -1,4 +1,13 @@
-# Smart-Career Scraper v2.3
+# Smart-Career Scraper v2.4
+
+## Changelog v2.4:
+### Additions/Changes
++ Mr. Song has pushed a tool to insert job description documents to neo4j.
++ Changed limiter to 50 to get some more data to explore.
++ Closed the neo4j driver to get rid of an error at the end.
+### Removals:
+### To do:
++ Change job description neo4j uploader to match our plan for data visualization
 
 ## Changelog v2.3:
 ### Additions/Changes
