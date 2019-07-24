@@ -1,4 +1,14 @@
-# Smart-Career Scraper v2.5
+# Smart-Career Scraper v2.6
+
+## Changelog v2.6:
+### Additions/Changes
++ Changed the graph structure to be more location-focused.
++ Updated the neo4j ip.
+### Removals:
+### To do:
++ Make it so location, company names, and job titles are standardized... maybe combine with similarsearch?
++ Trying to make similarsearch work with pymongo connection.
++ Optimizations if possible...
 
 ## Changelog v2.5:
 ### Additions/Changes
