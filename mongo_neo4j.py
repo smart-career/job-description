@@ -13,7 +13,7 @@ from neo4j import GraphDatabase
 # Mongo DB fuctions
 def mongodb_init():
     client=MongoClient('mongodb://34.73.180.107:27017')
-    db=client.smartcareer
+    db=client.Backup
     return db
 
 def mongodb_get_collection(db,item):
@@ -49,7 +49,7 @@ def mongodb_read_docs(col):
 
 # Neo4j Functions
 def neo4j_init():
-    uri = "bolt://34.67.91.17"
+    uri = "bolt://34.66.112.119"
     userName = "neo4j"
     passwd = "SmartCareer0!"
     ndb=GraphDatabase.driver(uri, auth=(userName,passwd))
@@ -122,7 +122,7 @@ if "__main__":
         cqlNode="""Merge (j:`Job Title` {Name:'%s', Seniority:'%s', Job_Functions:'%s', Employment_Type:'%s'})
                  Merge (c:`Company` {Name:'%s',  Industry:'%s'})
                  Merge (l:`Location` {Name:'%s'})
-                 Merge (j)-[:JOBAT]->(c)
+                 Merge (c)-[:COMPANYAT]->(l)
                  Merge (j)-[:LOCATEDAT]->(l)""" % (jobTitle,seniority,jobFunction,employmentType,company,industry,location)
 
         try:
