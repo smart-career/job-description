@@ -4,6 +4,7 @@
 ### Additions/Changes
 + Mr. Song uploaded more job description files to MongoDB so I switched back over to smart career database for the mongodb-neo4j uploader. 
 + get_jobs.py was also modified by Mr. Song and some bugs were fixed.
++ Fixed a bug where getting the key for job functions would throw an error and stop input of data (for MongoDB_Neo4j)
 ### Removals:
 + get_jobs.py as test_jobs.py fixes a bunch of issues get_jobs.py had.
 + cfg.txt as the new .json one matches with test_jobs.py
