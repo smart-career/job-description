@@ -5,6 +5,9 @@
 + Mr. Song uploaded more job description files to MongoDB so I switched back over to smart career database for the mongodb-neo4j uploader. 
 + get_jobs.py was also modified by Mr. Song and some bugs were fixed.
 ### Removals:
++ get_jobs.py as test_jobs.py fixes a bunch of issues get_jobs.py had.
++ cfg.txt as the new .json one matches with test_jobs.py
++ cd, not sure what this file was but it was completely empty.
 ### To do:
 + Make it so location, company names, and job titles are standardized... maybe combine with similarsearch?
 + Trying to make similarsearch work with pymongo connection.
