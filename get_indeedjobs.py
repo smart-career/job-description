@@ -27,7 +27,7 @@ def mongodb_get_collection(db,item):
 
 def mongodb_put_doc(doc):
     db=mongodb_init()
-    col=mongodb_get_collection(db,'jobdescription')
+    col=mongodb_get_collection(db,'indeedjobdescription')
 
     try:
         global docNum

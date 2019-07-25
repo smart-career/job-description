@@ -13,7 +13,7 @@ from neo4j import GraphDatabase
 # Mongo DB fuctions
 def mongodb_init():
     client=MongoClient('mongodb://34.73.180.107:27017')
-    db=client.Backup
+    db=client.smartcareer
     return db
 
 def mongodb_get_collection(db,item):

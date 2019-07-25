@@ -7,14 +7,20 @@ import decimal
 import nltk
 import string
 import re
+from pymongo import MongoClient
 from difflib import SequenceMatcher
 from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import CountVectorizer
 
 # Choose a function based on user input.
 def main():
-    # Take in the 3 user inputs (file, field, word to search for)
-    newFile = input("What is the file name? ")
+    # Connecting to MongoDB for all of the documents.
+    client = MongoClient('mongodb://34.73.180.107:27017')
+    db = client.smartcareer
+    col = db['jobdescription']
+    allDocs = list(col.find())
+
+    # User input for search function
     field = string.capwords(input("What is the field you are looking for? "))
     newText = string.capwords(input("What is the text you are looking for? \nType 'All+' for all unique words of that topic.\n"))
     print()
@@ -22,23 +28,22 @@ def main():
 
     lineCount = 0
     newList = []
+    print(allDocs[0])
 
     # Open a file and parse all lines and add to list.
     if newText == "All+":
-        with open(newFile, encoding="utf8") as thisFile:
-            for line in thisFile:
-                newList.append(line)
-                lineCount += 1
-            varSearch(newList, lineCount, field)
+        for document in allDocs:
+            newList.append(document)
+            lineCount += 1
+        varSearch(newList, lineCount, field)
 
     # Open a file and parse through lines, only adding lines that have the key word/phrase included.
     else: 
-        with open(newFile, encoding="utf8") as thisFile:
-            for line in thisFile:
-                if fieldText in line:
-                    newList.append(line)
-                    lineCount += 1
-            varSearch(newList, lineCount, field)
+        for document in allDocs:
+            if fieldText in document:
+                newList.append(document)
+                lineCount += 1
+        varSearch(newList, lineCount, field)
 
 # Take each document and find words or phrases similar to it.
 # If there are equivalent values, increase the counter for that specific word.
