@@ -1,4 +1,14 @@
-# Smart-Career Scraper v2.6
+# Smart-Career Scraper v2.7
+
+## Changelog v2.7:
+### Additions/Changes
++ Mr. Song uploaded more job description files to MongoDB so I switched back over to smart career database for the mongodb-neo4j uploader. 
++ get_jobs.py was also modified by Mr. Song and some bugs were fixed.
+### Removals:
+### To do:
++ Make it so location, company names, and job titles are standardized... maybe combine with similarsearch?
++ Trying to make similarsearch work with pymongo connection.
++ Optimizations if possible...
 
 ## Changelog v2.6:
 ### Additions/Changes
