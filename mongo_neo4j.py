@@ -40,7 +40,7 @@ def mongodb_read_docs(col):
 
     try:
 
-        ret=col.find().limit(50)
+        ret=col.find().limit(100)
         
     except Exception as e:
         print(e)
@@ -101,23 +101,34 @@ if "__main__":
     for d in docs:
         jobTitle=d['Job Title']
         company=d['Company']
-        location=d.get('Location')
+        location=d['Location']
         
         if location is "":
            location = "Not Specified"
         else:
-            location = d['Location']
+           location = d['Location']
 
         seniority=d.get('Seniority Level')
 
         if seniority is None:
-           seniority = "Not Specified"
+            seniority = "Not Specified"
         else:
             seniority = d['Seniority Level']
 
-        industry=d['Industry']
+        industry=d.get('Industry')
+        
+        if industry is None:
+            industry = "Not Specified"
+        else:
+            industry=d['Industry']
+
         employmentType=d['Employment Type']
-        jobFunction=d['Job Functions']
+
+        try:
+            jobFunction=d['Job Functions']
+
+        except:
+            continue
 
         cqlNode="""Merge (j:`Job Title` {Name:'%s', Seniority:'%s', Job_Functions:'%s', Employment_Type:'%s'})
                  Merge (c:`Company` {Name:'%s',  Industry:'%s'})
