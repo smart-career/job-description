@@ -2,6 +2,15 @@
 
 ## Changelog v2.7:
 ### Additions/Changes
++ Temporarily fixed bad inputs by skipping them. Not sure what the real problem is other than some docs having an apostrophe in their fields.
+### Removals:
+### To do:
++ Make it so location, company names, and job titles are standardized... maybe combine with similarsearch?
++ Trying to make similarsearch work with pymongo connection.
++ Gather more data and more fields
+
+## Changelog v2.7:
+### Additions/Changes
 + Mr. Song uploaded more job description files to MongoDB so I switched back over to smart career database for the mongodb-neo4j uploader. 
 + get_jobs.py was also modified by Mr. Song and some bugs were fixed.
 + Fixed a bug where getting the key for job functions would throw an error and stop input of data (for MongoDB_Neo4j)
