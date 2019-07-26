@@ -1,6 +1,6 @@
-# Smart-Career Scraper v2.7
+# Smart-Career Scraper v2.8
 
-## Changelog v2.7:
+## Changelog v2.8:
 ### Additions/Changes
 + Temporarily fixed bad inputs by skipping them. Not sure what the real problem is other than some docs having an apostrophe in their fields.
 ### Removals:
