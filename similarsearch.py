@@ -36,12 +36,12 @@ def varSearch(docs, field, newText):
     descCount = {}
     groupCount = {}
     temp4 = []
-    lineCount = 1
+    lineCount = 0
 
     for i in docs:
         try :
             value = i.get(field)
-            if newText in value:
+            if newText in value and newText != "All+":
                 cleanDesc = i.get('Description')
 
                 if value in similarCount:
@@ -50,26 +50,51 @@ def varSearch(docs, field, newText):
                 else:
                     similarCount[value] = 1
                     if len(similarCount) > 0:
-                        match = SequenceMatcher(None, value, list(similarCount.keys())[-2]).find_longest_match(0, len(value), 0, len(list(similarCount.keys())[-2]))
 
                         # Check the whole list for similar words and add to the group that is the shortest common subsequence of letters.
                         for key in similarCount.keys():
-                            tMatch = SequenceMatcher(None, key, list(similarCount.keys())[-2]).find_longest_match(0, len(key), 0, len(list(similarCount.keys())[-2]))
-                            if tMatch[2] < match[2]:
-                                match = tMatch
+                            tMatch = SequenceMatcher(None, newText, key).find_longest_match(0, len(newText), 0, len(key))
 
-                        if match[2] > 5:
-                            pureName = punctuationRemover(value[match.a: match.a + match.size])
-                            pureName = pureName.strip()
+                        pureName = punctuationRemover(newText[tMatch.a: tMatch.a + tMatch.size])
+                        pureName = pureName.strip()
 
-                            if pureName in groupCount:
-                                groupCount[pureName] = groupCount[pureName] + 1
-                            else:
-                                groupCount[pureName] = 2
-
+                        if pureName in groupCount:
+                            groupCount[pureName] = groupCount[pureName] + 1
                         else:
-                            continue
+                            groupCount[pureName] = 1
+
+                    else:
+                        continue
                 
+                temp3, descCount = descriptionParser(cleanDesc, descCount)
+                temp4 = temp3 + temp4
+                lineCount += 1
+        
+            elif newText == "All+":
+                cleanDesc = i.get('Description')
+
+                if value in similarCount:
+                    similarCount[value] = similarCount.get(value) + 1
+
+                else:
+                    similarCount[value] = 1
+                    if len(similarCount) > 0:
+
+                        # Check the whole list for similar words and add to the group that is the shortest common subsequence of letters.
+                        for key in similarCount.keys():
+                            tMatch = SequenceMatcher(None, value, key).find_longest_match(0, len(value), 0, len(key))
+
+                        pureName = punctuationRemover(newText[tMatch.a: tMatch.a + tMatch.size])
+                        pureName = pureName.strip()
+
+                        if pureName in groupCount:
+                            groupCount[pureName] = groupCount[pureName] + 1
+                        else:
+                            groupCount[pureName] = 1
+
+                    else:
+                        continue
+            
                 temp3, descCount = descriptionParser(cleanDesc, descCount)
                 temp4 = temp3 + temp4
                 lineCount += 1
