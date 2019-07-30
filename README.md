@@ -1,4 +1,17 @@
-# Smart-Career Scraper v2.8
+# Smart-Career Scraper v2.9
+
+## Changelog v2.9:
+### Additions/Changes
++ No longer uses the convoluted list method I had before, instead gets documents directly from MongoDB and runs using dictionary.get() method.
++ Grouping now works for specific user text input.
++ Grouping slightly broken for All+. Needs a lot of work.
+### Removals:
++ Old method (the new method is much cleaner)
++ jobs.json as we have automatic document input now.
+### To do:
++ Make it so location, company names, etc. are standardized... maybe combine with similarsearch?
++ Gather more data and more fields.
++ Add ability to change fields and upload back to MongoDB.
 
 ## Changelog v2.8:
 ### Additions/Changes
