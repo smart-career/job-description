@@ -40,7 +40,7 @@ def mongodb_read_docs(col):
 
     try:
 
-        ret=col.find().limit(100)
+        ret=col.find().limit(500)
         
     except Exception as e:
         print(e)
@@ -49,9 +49,12 @@ def mongodb_read_docs(col):
 
 # Neo4j Functions
 def neo4j_init():
-    uri = "bolt://34.66.112.119"
+    # uri = "bolt://34.66.112.119"
+    # userName = "neo4j"
+    # passwd = "SmartCareer0!"
+    uri = "bolt://localhost"
     userName = "neo4j"
-    passwd = "SmartCareer0!"
+    passwd = "Random1234"
     ndb=GraphDatabase.driver(uri, auth=(userName,passwd))
     return ndb
 
@@ -99,33 +102,37 @@ if "__main__":
     graphDB = neo4j_init()
 
     for d in docs:
-        jobTitle=d['Job Title']
-        company=d['Company']
-        location=d['Location']
+        jobTitle=d['Job Title'].replace("'","")
+        company=d['Company'].replace("'","")
+        location=d['Location'].replace("'","")
         
         if location is "":
            location = "Not Specified"
         else:
-           location = d['Location']
+           location = d['Location'].replace("'","")
 
         seniority=d.get('Seniority Level')
 
         if seniority is None:
             seniority = "Not Specified"
         else:
-            seniority = d['Seniority Level']
+            seniority = d['Seniority Level'].replace("'","")
 
         industry=d.get('Industry')
         
         if industry is None:
             industry = "Not Specified"
         else:
-            industry=d['Industry']
-
-        employmentType=d['Employment Type']
+            industry=d['Industry'].replace("'","")
+        
+        try:
+            employmentType=d['Employment Type']
+        
+        except:
+            continue
 
         try:
-            jobFunction=d['Job Functions']
+            jobFunction=d['Job Functions'].replace("'","")
 
         except:
             continue
@@ -133,8 +140,8 @@ if "__main__":
         cqlNode="""Merge (j:`Job Title` {Name:'%s', Seniority:'%s', Job_Functions:'%s', Employment_Type:'%s'})
                  Merge (c:`Company` {Name:'%s',  Industry:'%s'})
                  Merge (l:`Location` {Name:'%s'})
-                 Merge (c)-[:COMPANYAT]->(l)
-                 Merge (j)-[:LOCATEDAT]->(l)""" % (jobTitle,seniority,jobFunction,employmentType,company,industry,location)
+                 Merge (c)-[:POSTED]->(j)
+                 Merge (l)-[:HASJOB]->(j)""" % (jobTitle,seniority,jobFunction,employmentType,company,industry,location)
 
         try:
             ret=neo4j_merge(graphDB,cqlNode)
