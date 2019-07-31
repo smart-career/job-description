@@ -1,4 +1,12 @@
-# Smart-Career Scraper v2.9
+# Smart-Career Scraper v3.0
+
+## Changelog v3.0:
+### Additions/Changes
++ Finally gets the size of company! A new statistic for MongoDB
+### Removals:
+### To do:
++ Work on similarsearch processing for All+
++ Add ability to change fields and upload back to MongoDB.
 
 ## Changelog v2.9:
 ### Additions/Changes
