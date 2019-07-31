@@ -45,7 +45,7 @@ def mongodb_update_doc(col,doc):
 
     try:
         global docNum
-        re=col.update_one(doc,doc, {upsert=True})
+        re=col.update_one(doc,doc, {upsert==True})
         ret=re.upserted_id
         docNum += 1
     except:
@@ -178,12 +178,27 @@ def scrape(config):
                 obj['Job Title'] = job_title
             except:
                 obj['Job Title'] = ''
+            
+            try:
+                salary = clean_item(job_div.find_element_by_xpath("//p[@class='salary-main-rail__data-amount t-24 t-black t-normal']").text)
+                print("Salary:", salary)
+                obj['Salary'] = salary
+            except:
+                obj['Salary'] = 'Not Available'
 
             try:
                 company = clean_item(job_div.find_element_by_xpath("//a[@class='jobs-details-top-card__company-url ember-view']").text)
                 obj['Company'] = company
-            except:
+            except: 
                 obj['Company'] = ''
+
+            try:
+                job_size = job_div.find_elements_by_class_name("jobs-details-job-summary__text--ellipsis")
+                size = clean_item((job_size[2]).text)
+                print(size)
+                obj['Size'] = size
+            except:
+                obj['Size'] = ''
 
             try:
                 location = clean_item(job.find_element_by_tag_name('h5').text)
@@ -208,8 +223,8 @@ def scrape(config):
 
                 obj[field_name] = field_text
 
-            #doc_id=mongodb_put_doc(col,obj)
-            doc_id=mongodb_update_doc(col,obj)
+            doc_id=mongodb_put_doc(col,obj)
+            # doc_id=mongodb_update_doc(col,obj)
             print('post id: ', doc_id)
  #           job_postings.append(obj)
  #           main_obj['postings'] = job_postings
