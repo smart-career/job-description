@@ -178,10 +178,9 @@ def scrape(config):
                 obj['Job Title'] = job_title
             except:
                 obj['Job Title'] = ''
-            
+
             try:
                 salary = clean_item(job_div.find_element_by_xpath("//p[@class='salary-main-rail__data-amount t-24 t-black t-normal']").text)
-                print("Salary:", salary)
                 obj['Salary'] = salary
             except:
                 obj['Salary'] = 'Not Available'
@@ -195,7 +194,6 @@ def scrape(config):
             try:
                 job_size = job_div.find_elements_by_class_name("jobs-details-job-summary__text--ellipsis")
                 size = clean_item((job_size[2]).text)
-                print(size)
                 obj['Size'] = size
             except:
                 obj['Size'] = ''
