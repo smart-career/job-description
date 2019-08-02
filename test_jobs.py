@@ -199,7 +199,7 @@ def scrape(config):
                 obj['Size'] = ''
 
             try:
-                location = clean_item(job.find_element_by_tag_name('h5').text)
+                location = clean_item(job.find_element_by_xpath("//span[@class='job-card-search__location artdeco-entity-lockup__caption ember-view']").text)
                 obj['Location'] = location
             except:
                 obj['Location'] = ''
