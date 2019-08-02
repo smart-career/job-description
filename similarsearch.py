@@ -8,6 +8,9 @@ import nltk
 import string
 import re
 import json
+import copy
+from bson.json_util import dumps
+from bson import ObjectId
 from pymongo import MongoClient
 from difflib import SequenceMatcher
 from nltk.stem import WordNetLemmatizer
@@ -33,13 +36,14 @@ def main():
 # If there are equivalent values, increase the counter for that specific word.
 def varSearch(docs, field, newText):
     similarCount = {}
+    doClone = copy.deepcopy(docs)
     descCount = {}
     groupCount = {}
     temp4 = []
     lineCount = 0
 
     for i in docs:
-        try :
+        try:
             value = i.get(field)
             if newText in value and newText != "All+":
                 cleanDesc = i.get('Description')
@@ -84,11 +88,35 @@ def varSearch(docs, field, newText):
                         for key in similarCount.keys():
                             tMatch = SequenceMatcher(None, value, key).find_longest_match(0, len(value), 0, len(key))
 
-                        pureName = punctuationRemover(newText[tMatch.a: tMatch.a + tMatch.size])
+                        pureName = punctuationRemover(value[tMatch.a: tMatch.a + tMatch.size])
                         pureName = pureName.strip()
+                        
+                        # For All+, if there's more than one group we have to check through all of them for near-duplicates.
+                        if len(groupCount) > 0:
 
-                        if pureName in groupCount:
-                            groupCount[pureName] = groupCount[pureName] + 1
+                            # For each key in groupCount, try to get a match.
+                            for gKey in groupCount.keys():
+                                tMatch = SequenceMatcher(None, pureName, gKey).find_longest_match(0, len(pureName), 0, len(gKey))
+
+                                # If they are exactly equal, add one to the counter of that key.
+                                if pureName == gKey:
+                                    groupCount[pureName] = groupCount[pureName] + 1
+
+                                # Nearly matching, so it must be like 'Amazon' vs. 'Amazon Web Services'.
+                                elif tMatch[2] > 4:
+
+                                    # Take the shorter one and make that the main group. Remove the other longer key and give its value to the new one.
+                                    if len(pureName) < len(gKey):
+                                        addName = punctuationRemover(pureName[tMatch.a: tMatch.a + tMatch.size])
+                                        addName = addName.strip()
+                                        groupCount[addName] = groupCount.pop(gKey)
+                                    
+                                    # Same as above.
+                                    else:
+                                        addName = punctuationRemover(gKey[tMatch.b: tMatch.b + tMatch.size])
+                                        addName = addName.strip()
+                                        groupCount[addName] = groupCount[addName] + 1
+                               
                         else:
                             groupCount[pureName] = 1
 
@@ -127,9 +155,7 @@ def varSearch(docs, field, newText):
         print("{:3s} Word: {:20s} Count: {:4d}".format(str(count)+".","\""+key+"\"",val))
         count += 1
 
-    # Frequency plot.
-    freq = nltk.FreqDist(temp4)
-    freq.plot(30, cumulative = False)
+    docReplacer(doClone, field, groupCount)
     exit()
     
 # Use some natural language processing to extract unique words
@@ -173,5 +199,28 @@ def lemmatizer(temp2):
     textReturn = []
     textReturn = [wn.lemmatize(word) for word in temp2]
     return textReturn
+
+# This method receives all MongoDB documents, the field, and groupCount which holds the standardized name
+# and re-uploads a clean standardized dataset to MongoDB.
+def docReplacer(doClone, field, groupCount):
+    count = 0
+    client = MongoClient('34.73.180.107:27017', 27017)
+    db = client['Backup']
+    collection = db['Test']
+    replacement = ' '.join(groupCount.keys())
+
+    # Replace all variations with one standardized word or phrase.
+    for doc in doClone:
+        if replacement in doc[field]:
+            doc[field] = replacement
+            collection.insert_one(doc)
+            print("Inserted document:" + count)
+        else:
+            collection.insert_one(doc)
+            print("Inserted document:" + count)
+        count += 1
+
+    print("Replacement Complete!")
+
 
 main()
