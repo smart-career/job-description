@@ -9,6 +9,7 @@ import string
 import re
 import json
 import copy
+import pymongo
 from bson.json_util import dumps
 from bson import ObjectId
 from pymongo import MongoClient
@@ -208,16 +209,26 @@ def docReplacer(doClone, field, groupCount):
     db = client['Backup']
     collection = db['Test']
     replacement = ' '.join(groupCount.keys())
+    updateLine = { "$set": { field: replacement } }
 
     # Replace all variations with one standardized word or phrase.
     for doc in doClone:
         if replacement in doc[field]:
             doc[field] = replacement
-            collection.insert_one(doc)
-            print("Inserted document:" + count)
+            toUpdate = doc['_id']
+            docUpdate = { '_id': toUpdate}
+
+            try:
+                collection.insert_one(doc)
+                print("This document was standardized:", count)
+
+            except pymongo.errors.DuplicateKeyError:
+                collection.update_one(docUpdate, updateLine)
+                print("This document was standardized and updated:", count)
+
         else:
-            collection.insert_one(doc)
-            print("Inserted document:" + count)
+            collection.replace_one({'_id': doc['_id']}, doc, upsert=True)
+            print("This document was updated:", count)
         count += 1
 
     print("Replacement Complete!")
