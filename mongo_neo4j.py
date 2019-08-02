@@ -13,7 +13,7 @@ from neo4j import GraphDatabase
 # Mongo DB fuctions
 def mongodb_init():
     client=MongoClient('mongodb://34.73.180.107:27017')
-    db=client.smartcareer
+    db=client.Backup
     return db
 
 def mongodb_get_collection(db,item):
@@ -22,7 +22,7 @@ def mongodb_get_collection(db,item):
 
 def mongodb_put_doc(doc):
     db=mongodb_init()
-    col=mongodb_get_collection(db,'jobdescription')
+    col=mongodb_get_collection(db,'Test')
 
     try:
         global docNum
@@ -40,7 +40,7 @@ def mongodb_read_docs(col):
 
     try:
 
-        ret=col.find().limit(500)
+        ret=col.find().limit(1000)
         
     except Exception as e:
         print(e)
@@ -49,12 +49,12 @@ def mongodb_read_docs(col):
 
 # Neo4j Functions
 def neo4j_init():
-    # uri = "bolt://34.66.112.119"
-    # userName = "neo4j"
-    # passwd = "SmartCareer0!"
-    uri = "bolt://localhost"
+    uri = "bolt://35.225.21.161"
     userName = "neo4j"
-    passwd = "Random1234"
+    passwd = "SmartCareer0!"
+    # uri = "bolt://localhost"
+    # userName = "neo4j"
+    # passwd = "Random1234"
     ndb=GraphDatabase.driver(uri, auth=(userName,passwd))
     return ndb
 
@@ -98,7 +98,7 @@ def write_log(msg):
 if "__main__":
 
     print("Starting")
-    docs=mongodb_read_docs('jobdescription')
+    docs=mongodb_read_docs('Test')
     graphDB = neo4j_init()
 
     for d in docs:
@@ -106,7 +106,7 @@ if "__main__":
         company=d['Company'].replace("'","")
         location=d['Location'].replace("'","")
         
-        if location is "":
+        if location is None:
            location = "Not Specified"
         else:
            location = d['Location'].replace("'","")
@@ -136,12 +136,22 @@ if "__main__":
 
         except:
             continue
+        try:
+            size = d['Size'].replace("'","")
+        
+            if size is None:
+                size = "Not Specified"
+            else:
+                size = d['Size'].replace("'","")
+        
+        except:
+            size = "Not Specified"
 
         cqlNode="""Merge (j:`Job Title` {Name:'%s', Seniority:'%s', Job_Functions:'%s', Employment_Type:'%s'})
-                 Merge (c:`Company` {Name:'%s',  Industry:'%s'})
+                 Merge (c:`Company` {Name:'%s',  Industry:'%s', Size:'%s'})
                  Merge (l:`Location` {Name:'%s'})
-                 Merge (c)-[:POSTED]->(j)
-                 Merge (l)-[:HASJOB]->(j)""" % (jobTitle,seniority,jobFunction,employmentType,company,industry,location)
+                 Merge (j)-[:POSTEDBY]->(c)
+                 Merge (j)-[:LOCATEDAT]->(l)""" % (jobTitle,seniority,jobFunction,employmentType,company,industry,size,location)
 
         try:
             ret=neo4j_merge(graphDB,cqlNode)
