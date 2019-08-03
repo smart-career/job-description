@@ -38,16 +38,13 @@ def main():
 def varSearch(docs, field, newText):
     similarCount = {}
     doClone = copy.deepcopy(docs)
-    descCount = {}
     groupCount = {}
-    temp4 = []
     lineCount = 0
 
     for i in docs:
         try:
             value = i.get(field)
             if newText in value and newText != "All+":
-                cleanDesc = i.get('Description')
 
                 if value in similarCount:
                     similarCount[value] = similarCount.get(value) + 1
@@ -71,12 +68,9 @@ def varSearch(docs, field, newText):
                     else:
                         continue
                 
-                temp3, descCount = descriptionParser(cleanDesc, descCount)
-                temp4 = temp3 + temp4
                 lineCount += 1
         
             elif newText == "All+":
-                cleanDesc = i.get('Description')
 
                 if value in similarCount:
                     similarCount[value] = similarCount.get(value) + 1
@@ -123,9 +117,7 @@ def varSearch(docs, field, newText):
 
                     else:
                         continue
-            
-                temp3, descCount = descriptionParser(cleanDesc, descCount)
-                temp4 = temp3 + temp4
+
                 lineCount += 1
             
         # Skip this document since the field does not exist for it.
@@ -147,37 +139,11 @@ def varSearch(docs, field, newText):
     # Print out each topic and how many variations they have each.
     for key,val in sorted(groupCount.items(), key = lambda kv:(kv[1], kv[0]), reverse = True):
         print("Group: {:40s} Variations: {:1d}".format(key, val))
-
-    print("\nThese are the top ten words for this topic:\n")
-    count = 1
-
-    # Print the top 10 words in the descriptions of a certain job or topic.
-    for key,val in sorted(descCount.items(), key = lambda kv:(kv[1], kv[0]), reverse = True)[0:10]:
-        print("{:3s} Word: {:20s} Count: {:4d}".format(str(count)+".","\""+key+"\"",val))
-        count += 1
+        print()
 
     docReplacer(doClone, field, groupCount)
     exit()
     
-# Use some natural language processing to extract unique words
-# from the document's description and insert it into a dictionary.
-def descriptionParser(cleanDesc, descCount):
-    temp = punctuationRemover(cleanDesc)
-    temp = re.sub(r'\d+', '', temp)
-    splitDesc = tokenize(temp)
-    splitDesc = [item.lower() for item in splitDesc]
-    temp2 = removeStop(splitDesc)
-    temp3 = lemmatizer(temp2)
-
-    # Get a count of important words within each related description.
-    for j in temp3:
-        if j in descCount:
-            descCount[j] = descCount.get(j) + 1
-        else :
-            descCount[j] = 1
-    
-    return temp3, descCount
-
 # NLP that removes all punctuation.
 def punctuationRemover(description):
     noPunctuation = "".join([char for char in description if char not in string.punctuation])
@@ -187,19 +153,6 @@ def punctuationRemover(description):
 def tokenize(temp):
     tokens = re.split(r'\W+', temp)
     return tokens
-
-# NLP that removes clutter words such as 'by' and 'and'.
-def removeStop(splitDesc):
-    stopword = nltk.corpus.stopwords.words('english')
-    returnText = [word for word in splitDesc if word not in stopword]
-    return returnText
-
-# Gets only the root of each word (slower, but better than stemming).
-def lemmatizer(temp2):
-    wn = WordNetLemmatizer()
-    textReturn = []
-    textReturn = [wn.lemmatize(word) for word in temp2]
-    return textReturn
 
 # This method receives all MongoDB documents, the field, and groupCount which holds the standardized name
 # and re-uploads a clean standardized dataset to MongoDB.
@@ -213,23 +166,37 @@ def docReplacer(doClone, field, groupCount):
 
     # Replace all variations with one standardized word or phrase.
     for doc in doClone:
+
+        # This document must be standardized.
         if replacement in doc[field]:
             doc[field] = replacement
             toUpdate = doc['_id']
             docUpdate = { '_id': toUpdate}
 
+            # This document is new, but it needed to be standardized.
             try:
                 collection.insert_one(doc)
-                print("This document was standardized:", count)
+                print("This document was standardized!:", count)
 
+            # This document has already been inserted, but another field needed to be standardized.
             except pymongo.errors.DuplicateKeyError:
                 collection.update_one(docUpdate, updateLine)
-                print("This document was standardized and updated:", count)
+                print("This document was standardized and updated!:", count)
 
+        # This document does not need to be standardized.
         else:
-            collection.replace_one({'_id': doc['_id']}, doc, upsert=True)
-            print("This document was updated:", count)
-        count += 1
+
+            #Completely new document being added.
+            try:
+                collection.insert_one(doc)
+                print("This document was newly inserted!:", count)
+
+            # This document is up to date, do not touch.
+            except pymongo.errors.DuplicateKeyError:
+                print("This document is up to date!", count)
+                continue
+                
+    count += 1
 
     print("Replacement Complete!")
 
