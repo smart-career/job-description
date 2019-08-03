@@ -1,4 +1,15 @@
-# Smart-Career Scraper v3.0
+# Smart-Career Scraper v3.1
+
+## Changelog v3.1:
+### Additions/Changes
++ similarsearch.py now takes in a field and text and replaces all similar texts with the new standardized text. It also automatically updates only the field that needs to be updated.
++ mongo_neo4j.py now uses the clean data in "Test" to upload onto Neo4j.
++ Fixed a bug where a standardized document could revert back to an unstandardized form.
+### Removals:
++ temp.json as I realized it is much easier just to re-upload to MongoDB.
+### To do:
++ Work on similarsearch processing for All+
++ Refine similarsearch to take in multiple fields and texts and run at once.
 
 ## Changelog v3.0:
 ### Additions/Changes
