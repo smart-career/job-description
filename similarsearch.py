@@ -10,8 +10,6 @@ import re
 import json
 import copy
 import pymongo
-from bson.json_util import dumps
-from bson import ObjectId
 from pymongo import MongoClient
 from difflib import SequenceMatcher
 from nltk.stem import WordNetLemmatizer
@@ -24,7 +22,7 @@ def main():
     client = MongoClient('mongodb://34.73.180.107:27017')
     db = client.smartcareer
     col = db['jobdescription']
-    allDocs = col.find()
+    allDocs = col.find({},no_cursor_timeout=True)
 
     # User input for search function
     field = string.capwords(input("What is the field you are looking for? "))
@@ -44,7 +42,7 @@ def varSearch(docs, field, newText):
     for i in docs:
         try:
             value = i.get(field)
-            if newText in value and newText != "All+":
+            if newText in value and newText != "All+" and field != "Location":
 
                 if value in similarCount:
                     similarCount[value] = similarCount.get(value) + 1
@@ -67,6 +65,23 @@ def varSearch(docs, field, newText):
 
                     else:
                         continue
+                
+                lineCount += 1
+            
+            elif field == "Location":
+                if value in similarCount:
+                    similarCount[value] = similarCount.get(value) + 1
+
+                else:
+                    similarCount[value] = 1
+                    if len(similarCount) > 0:
+
+                        pureName = newText
+
+                        if pureName in groupCount:
+                            groupCount[pureName] = groupCount[pureName] + 1
+                        else:
+                            groupCount[pureName] = 1
                 
                 lineCount += 1
         
@@ -159,45 +174,59 @@ def tokenize(temp):
 def docReplacer(doClone, field, groupCount):
     count = 0
     client = MongoClient('34.73.180.107:27017', 27017)
-    db = client['Backup']
-    collection = db['Test']
+    db = client['smartcareer']
+    collection = db['Clean']
     replacement = ' '.join(groupCount.keys())
+    match = ' '.join(groupCount.keys())
     updateLine = { "$set": { field: replacement } }
 
     # Replace all variations with one standardized word or phrase.
     for doc in doClone:
 
+        if field == "Location":
+            citySplit = replacement.split(",")
+            match = citySplit[0]
+
         # This document must be standardized.
-        if replacement in doc[field]:
-            doc[field] = replacement
-            toUpdate = doc['_id']
-            docUpdate = { '_id': toUpdate}
+        try: 
+            if match in doc[field]:
 
-            # This document is new, but it needed to be standardized.
-            try:
-                collection.insert_one(doc)
-                print("This document was standardized!:", count)
+                #If the field doesn't exist (older document), then skip it.
+                doc[field] = replacement
+                toUpdate = doc['_id']
+                docUpdate = { '_id': toUpdate}
 
-            # This document has already been inserted, but another field needed to be standardized.
-            except pymongo.errors.DuplicateKeyError:
-                collection.update_one(docUpdate, updateLine)
-                print("This document was standardized and updated!:", count)
+                # This document is new, but it needed to be standardized.
+                try:
+                    collection.insert_one(doc)
+                    count += 1
+                    print("This document was standardized!:", count)
 
-        # This document does not need to be standardized.
-        else:
+                # This document has already been inserted, but another field needed to be standardized.
+                except pymongo.errors.DuplicateKeyError:
+                    collection.update_one(docUpdate, updateLine)
+                    count += 1
+                    print("This document was standardized and updated!:", count)
 
-            #Completely new document being added.
-            try:
-                collection.insert_one(doc)
-                print("This document was newly inserted!:", count)
+            # This document does not need to be standardized.
+            else:
 
-            # This document is up to date, do not touch.
-            except pymongo.errors.DuplicateKeyError:
-                print("This document is up to date!", count)
-                continue
-                
-    count += 1
+                #Completely new document being added.
+                try:
+                    collection.insert_one(doc)
+                    count += 1
+                    print("This document was newly inserted!:", count)
 
+                # This document is up to date, do not touch.
+                except pymongo.errors.DuplicateKeyError:
+                    count += 1
+                    print("This document is up to date!", count)
+                    continue
+
+        except:
+            continue
+
+    doClone.close()
     print("Replacement Complete!")
 
 
