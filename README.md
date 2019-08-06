@@ -1,4 +1,17 @@
-# Smart-Career Scraper v3.1
+# Smart-Career Scraper v3.2
+
+## Changelog v3.2:
+### Additions/Changes
++ Moving clean data to smartcareer database now that I know similarsearch.py works.
++ Fixed bug where location wasn't in city, state, country format.
++ Lots of cleaning done.
+### Removals:
++ Not using Backup - Test anymore as there is no longer a need for it.
+### To do:
++ Work on similarsearch processing for All+
++ Refine similarsearch to take in multiple fields and texts and run at once.
++ Optimization
++ Bug fixing (State and Country are not fully capitalized for location)
 
 ## Changelog v3.1:
 ### Additions/Changes
