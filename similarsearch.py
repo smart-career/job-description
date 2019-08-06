@@ -190,7 +190,7 @@ def docReplacer(doClone, field, groupCount):
         # This document must be standardized.
         try: 
             if match in doc[field]:
-
+                count += 1
                 #If the field doesn't exist (older document), then skip it.
                 doc[field] = replacement
                 toUpdate = doc['_id']
@@ -199,31 +199,28 @@ def docReplacer(doClone, field, groupCount):
                 # This document is new, but it needed to be standardized.
                 try:
                     collection.insert_one(doc)
-                    count += 1
-                    print("This document was standardized!:", count)
+                    print("This new document was standardized!:", count)
 
                 # This document has already been inserted, but another field needed to be standardized.
                 except pymongo.errors.DuplicateKeyError:
                     collection.update_one(docUpdate, updateLine)
-                    count += 1
-                    print("This document was standardized and updated!:", count)
+                    print("A field has been updated!:", count)
 
             # This document does not need to be standardized.
             else:
-
+                count += 1
                 #Completely new document being added.
                 try:
                     collection.insert_one(doc)
-                    count += 1
-                    print("This document was newly inserted!:", count)
+                    print("New document inserted!:", count)
 
                 # This document is up to date, do not touch.
                 except pymongo.errors.DuplicateKeyError:
-                    count += 1
-                    print("This document is up to date!", count)
+                    print("No update needed.", count)
                     continue
 
         except:
+            count += 1
             continue
 
     doClone.close()
