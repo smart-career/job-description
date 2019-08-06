@@ -8,12 +8,10 @@ import nltk
 import string
 import re
 import json
-import copy
 import pymongo
+import copy
 from pymongo import MongoClient
 from difflib import SequenceMatcher
-from nltk.stem import WordNetLemmatizer
-from sklearn.feature_extraction.text import CountVectorizer
 
 # Choose a function based on user input.
 def main():
@@ -25,8 +23,8 @@ def main():
     allDocs = col.find({},no_cursor_timeout=True)
 
     # User input for search function
-    field = string.capwords(input("What is the field you are looking for? "))
-    newText = string.capwords(input("What is the text you are looking for? \nType 'All+' for all unique words of that topic.\n"))
+    field = string.capwords(input("What is the field you are trying to change? "))
+    newText = string.capwords(input("Please enter the group name. \nType 'All+' for all unique words of that topic.\n"))
     print()
 
     varSearch(allDocs, field, newText)
@@ -113,7 +111,7 @@ def varSearch(docs, field, newText):
                                     groupCount[pureName] = groupCount[pureName] + 1
 
                                 # Nearly matching, so it must be like 'Amazon' vs. 'Amazon Web Services'.
-                                elif tMatch[2] > 4:
+                                elif tMatch[2] > 5:
 
                                     # Take the shorter one and make that the main group. Remove the other longer key and give its value to the new one.
                                     if len(pureName) < len(gKey):
@@ -143,6 +141,10 @@ def varSearch(docs, field, newText):
     print("Total Found:", lineCount,"\n")
     print("All similar texts:\n")
 
+    if (len(groupCount) == 0):
+        print("There were no matches! Now stopping the program.")
+        exit()
+
     # Print out each dictionary item and how many times it was found/percentage of all
     # documents with that word or phrase.
     for key,val in sorted(similarCount.items(), key = lambda kv:(kv[1], kv[0]), reverse = True):
@@ -156,7 +158,9 @@ def varSearch(docs, field, newText):
         print("Group: {:40s} Variations: {:1d}".format(key, val))
         print()
 
-    docReplacer(doClone, field, groupCount)
+    choice = input("All of the above (unless field is location) will be changed to", newText, "is that ok? (Yes or No):")
+    if choice.upper() == "YES":
+        docReplacer(doClone, field, groupCount)
     exit()
     
 # NLP that removes all punctuation.
@@ -178,7 +182,6 @@ def docReplacer(doClone, field, groupCount):
     collection = db['Clean']
     replacement = ' '.join(groupCount.keys())
     match = ' '.join(groupCount.keys())
-    updateLine = { "$set": { field: replacement } }
 
     # Replace all variations with one standardized word or phrase.
     for doc in doClone:
@@ -186,6 +189,7 @@ def docReplacer(doClone, field, groupCount):
         if field == "Location":
             citySplit = replacement.split(",")
             match = citySplit[0]
+            replacement = match + "," + citySplit[1].upper() + "," + citySplit[2].upper()
 
         # This document must be standardized.
         try: 
@@ -195,6 +199,7 @@ def docReplacer(doClone, field, groupCount):
                 doc[field] = replacement
                 toUpdate = doc['_id']
                 docUpdate = { '_id': toUpdate}
+                updateLine = { "$set": { field: replacement } }
 
                 # This document is new, but it needed to be standardized.
                 try:
@@ -225,6 +230,6 @@ def docReplacer(doClone, field, groupCount):
 
     doClone.close()
     print("Replacement Complete!")
-
+    exit()
 
 main()
