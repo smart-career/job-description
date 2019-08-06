@@ -13,7 +13,7 @@ from neo4j import GraphDatabase
 # Mongo DB fuctions
 def mongodb_init():
     client=MongoClient('mongodb://34.73.180.107:27017')
-    db=client.Backup
+    db=client.smartcareer
     return db
 
 def mongodb_get_collection(db,item):
@@ -22,7 +22,7 @@ def mongodb_get_collection(db,item):
 
 def mongodb_put_doc(doc):
     db=mongodb_init()
-    col=mongodb_get_collection(db,'Test')
+    col=mongodb_get_collection(db,'Clean')
 
     try:
         global docNum
@@ -40,7 +40,7 @@ def mongodb_read_docs(col):
 
     try:
 
-        ret=col.find().limit(1000)
+        ret=col.find().limit(2000)
         
     except Exception as e:
         print(e)
@@ -98,7 +98,7 @@ def write_log(msg):
 if "__main__":
 
     print("Starting")
-    docs=mongodb_read_docs('Test')
+    docs=mongodb_read_docs('Clean')
     graphDB = neo4j_init()
 
     for d in docs:
