@@ -1,4 +1,19 @@
-# Smart-Career Scraper v3.2
+# Smart-Career Scraper v3.3
+
+## Changelog v3.3:
+### Additions/Changes
++ Fixed a bug where state and country would not be capitalized.
++ Updated previous locations to match standardization.
++ Added a safety check to make sure the user knows what values will be replaced in MongoDB.
++ To create a backup, just ask for "Company" and "Amazon" then switch the download collection to "Clean" and the upload collection to "CleanBackup".
++ Added a failsafe where if for some reason similarsearch can not find any similar values, it will now exit instead of replacing all values of a certain field to "".
++ Cleaned up commenting to reflect the new direction this program has gone.
+### Removals:
+### To do:
++ Work on similarsearch processing for All+.
++ Refine similarsearch to take in multiple fields and texts and run at once.
++ Figure out how to sort job titles.
++ Optimization
 
 ## Changelog v3.2:
 ### Additions/Changes
