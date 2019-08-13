@@ -20,7 +20,7 @@ def main():
     # Connecting to MongoDB to gather all of the documents.
     client = MongoClient('mongodb://34.73.180.107:27017')
     db = client.smartcareer
-    col = db['jobdescription']
+    col = db['Clean']
     allDocs = col.find({},no_cursor_timeout=True)
 
     # User input for search and replace function.
@@ -174,7 +174,7 @@ def varSearch(docs, field, newText):
         print()
 
     # This section is just to confirm what will be changed in the main collection.
-    choice = input("All of the above (unless field is location) will be changed to \"" + newText + "\" is that ok? (Yes or No):")
+    choice = input("All of the above (unless field is location) will be changed to \"" + newText + "\" is that ok? (Yes or No): ")
 
     if choice.upper() == "YES":
         docReplacer(doClone, field, groupCount)
