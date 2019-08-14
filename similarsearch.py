@@ -25,7 +25,7 @@ def main():
 
     # User input for search and replace function.
     field = string.capwords(input("What is the field you are trying to change? "))
-    newText = string.capwords(input("Please enter the group name. \nType 'All+' for all unique words of that topic.\n"))
+    newText = string.capwords(input("Please enter the group name. \nType 'All+' to display all values of the specified field.\n"))
     print()
 
     varSearch(allDocs, field, newText)
@@ -97,54 +97,54 @@ def varSearch(docs, field, newText):
                 
                 lineCount += 1
 
-            # UNDER CONSTRUCTION / Out of order
-            # elif newText == "All+":
+            # New function: Just displays every document's specified field value. Useful for manual checking.
+            elif newText == "All+":
 
-            #     if value in similarCount:
-            #         similarCount[value] = similarCount.get(value) + 1
+                if value in similarCount:
+                    similarCount[value] = similarCount.get(value) + 1
 
-            #     else:
-            #         similarCount[value] = 1
-            #         if len(similarCount) > 0:
+                else:
+                    similarCount[value] = 1
+                    if len(similarCount) > 0:
 
-            #             # Check the whole list for similar words and add to the group that is the shortest common subsequence of letters.
-            #             for key in similarCount.keys():
-            #                 tMatch = SequenceMatcher(None, value, key).find_longest_match(0, len(value), 0, len(key))
+                        # Check the whole list for similar words and add to the group that is the shortest common subsequence of letters.
+                        for key in similarCount.keys():
+                            tMatch = SequenceMatcher(None, value, key).find_longest_match(0, len(value), 0, len(key))
 
-            #             pureName = punctuationRemover(value[tMatch.a: tMatch.a + tMatch.size])
-            #             pureName = pureName.strip()
+                        pureName = punctuationRemover(value[tMatch.a: tMatch.a + tMatch.size])
+                        pureName = pureName.strip()
                         
-            #             # For All+, if there's more than one group we have to check through all of them for near-duplicates.
-            #             if len(groupCount) > 0:
+                        # For All+, if there's more than one group we have to check through all of them for near-duplicates.
+                        if len(groupCount) > 0:
 
-            #                 # For each key in groupCount, try to get a match.
-            #                 for gKey in groupCount.keys():
-            #                     tMatch = SequenceMatcher(None, pureName, gKey).find_longest_match(0, len(pureName), 0, len(gKey))
+                            # For each key in groupCount, try to get a match.
+                            for gKey in groupCount.keys():
+                                tMatch = SequenceMatcher(None, pureName, gKey).find_longest_match(0, len(pureName), 0, len(gKey))
 
-            #                     # If they are exactly equal, add one to the counter of that key.
-            #                     if pureName == gKey:
-            #                         groupCount[pureName] = groupCount[pureName] + 1
+                                # If they are exactly equal, add one to the counter of that key.
+                                if pureName == gKey:
+                                    groupCount[pureName] = groupCount[pureName] + 1
 
-            #                     # Nearly matching, so it must be like 'Amazon' vs. 'Amazon Web Services'.
-            #                     elif tMatch[2] > 5:
+                                # Nearly matching, so it must be like 'Amazon' vs. 'Amazon Web Services'.
+                                elif tMatch[2] > 5:
 
-            #                         # Take the shorter one and make that the main group. Remove the other longer key and give its value to the new one.
-            #                         if len(pureName) < len(gKey):
-            #                             addName = punctuationRemover(pureName[tMatch.a: tMatch.a + tMatch.size])
-            #                             addName = addName.strip()
-            #                             groupCount[addName] = groupCount.pop(gKey)
+                                    # Take the shorter one and make that the main group. Remove the other longer key and give its value to the new one.
+                                    if len(pureName) < len(gKey):
+                                        addName = punctuationRemover(pureName[tMatch.a: tMatch.a + tMatch.size])
+                                        addName = addName.strip()
+                                        groupCount[addName] = groupCount.pop(gKey)
                                     
-            #                         # Same as above.
-            #                         else:
-            #                             addName = punctuationRemover(gKey[tMatch.b: tMatch.b + tMatch.size])
-            #                             addName = addName.strip()
-            #                             groupCount[addName] = groupCount[addName] + 1
+                                    # Same as above.
+                                    else:
+                                        addName = punctuationRemover(gKey[tMatch.b: tMatch.b + tMatch.size])
+                                        addName = addName.strip()
+                                        groupCount[addName] = groupCount[addName] + 1
                                
-            #             else:
-            #                 groupCount[pureName] = 1
+                        else:
+                            groupCount[pureName] = 1
 
-            #         else:
-            #             continue
+                    else:
+                        continue
 
                 lineCount += 1
             
@@ -187,7 +187,7 @@ def docReplacer(doClone, field, groupCount):
     count = 0
     client = MongoClient('34.73.180.107:27017', 27017)
     db = client['smartcareer']
-    collection = db['Clean']
+    collection = db['CleanBackup']
     replacement = ' '.join(groupCount.keys())
     match = ' '.join(groupCount.keys())
 
