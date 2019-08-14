@@ -80,10 +80,11 @@ def varSearch(docs, field, newText):
             
             # Special section for location only. Skips all the matching stuff since I already know what to replace it with.
             elif field == "Location":
-                if value in similarCount:
+                cityVal = value.split(",")
+                if value in similarCount and cityVal[0] in newText:
                     similarCount[value] = similarCount.get(value) + 1
 
-                else:
+                elif cityVal[0] in newText:
                     similarCount[value] = 1
                     if len(similarCount) > 0:
 
