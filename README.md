@@ -1,4 +1,16 @@
-# Smart-Career Scraper v3.3
+# Smart-Career Scraper v3.4
+
+## Changelog v3.4:
+### Additions/Changes
++ For location only, changed logic of varSearch to only return results with the same city. This is so it's easier to know what will be changed in the database.
++ Revamped All+ option to just display all values for a specified field. This is useful for manual updates of the database documents.
+### Removals:
++ neo4j localhost credentials as they are not needed.
+### To do:
++ Finish up cleaning.
++ More efficient cleaning.
++ Possibly when collecting data, split location into city, state, country.
+
 
 ## Changelog v3.3:
 ### Additions/Changes
