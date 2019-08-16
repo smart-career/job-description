@@ -1,4 +1,15 @@
-# Smart-Career Scraper v3.4
+# Smart-Career Scraper v3.5
+
+## Changelog v3.5:
+### Additions/Changes
++ Thank you Jaesung for the update!
++ New options menu when updating documents.
++ Much faster replacement algorithm!
+### Removals:
++ JS_similarsearch.py was renamed to similarsearch.py for consistency.
++ Removed docReplacer function as the options do all of it faster.
+### To do:
++ Any bug fixes or additional feature requests
 
 ## Changelog v3.4:
 ### Additions/Changes
