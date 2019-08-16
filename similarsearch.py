@@ -15,36 +15,40 @@ import copy
 from pymongo import MongoClient
 from difflib import SequenceMatcher
 
-def main():
 
+def main():
     # Connecting to MongoDB to gather all of the documents.
     client = MongoClient('mongodb://34.73.180.107:27017')
     db = client.smartcareer
     col = db['Clean']
-    allDocs = col.find({},no_cursor_timeout=True)
+    allDocs = col.find({}, no_cursor_timeout=True)
 
     # User input for search and replace function.
     field = string.capwords(input("What is the field you are trying to change? "))
-    newText = string.capwords(input("Please enter the group name. \nType 'All+' to display all values of the specified field.\n"))
+    newText = string.capwords(
+        input("Please enter the group name. \nType 'All+' to display all values of the specified field.\n"))
     print()
 
     varSearch(allDocs, field, newText)
-    
+
+
 # NLP that removes all punctuation.
 def punctuationRemover(description):
     noPunctuation = "".join([char for char in description if char not in string.punctuation])
     return noPunctuation
+
 
 # NLP that splits words by space.
 def tokenize(temp):
     tokens = re.split(r'\W+', temp)
     return tokens
 
+
 # Take each document and find words or phrases similar to it.
 # If there are equivalent values, increase the counter for that specific word.
+# Afterwards, clean documents as needed.
 def varSearch(docs, field, newText):
     similarCount = {}
-    doClone = copy.deepcopy(docs)
     groupCount = {}
     lineCount = 0
 
@@ -63,7 +67,8 @@ def varSearch(docs, field, newText):
 
                         # Check the whole list for similar words and add to the group that is the shortest common subsequence of letters.
                         for key in similarCount.keys():
-                            tMatch = SequenceMatcher(None, newText, key).find_longest_match(0, len(newText), 0, len(key))
+                            tMatch = SequenceMatcher(None, newText, key).find_longest_match(0, len(newText), 0,
+                                                                                            len(key))
 
                         pureName = punctuationRemover(newText[tMatch.a: tMatch.a + tMatch.size])
                         pureName = pureName.strip()
@@ -75,9 +80,9 @@ def varSearch(docs, field, newText):
 
                     else:
                         continue
-                
+
                 lineCount += 1
-            
+
             # Special section for location only. Skips all the matching stuff since I already know what to replace it with.
             elif field == "Location":
                 cityVal = value.split(",")
@@ -94,7 +99,7 @@ def varSearch(docs, field, newText):
                             groupCount[pureName] = groupCount[pureName] + 1
                         else:
                             groupCount[pureName] = 1
-                
+
                 lineCount += 1
 
             # New function: Just displays every document's specified field value. Useful for manual checking.
@@ -113,13 +118,14 @@ def varSearch(docs, field, newText):
 
                         pureName = punctuationRemover(value[tMatch.a: tMatch.a + tMatch.size])
                         pureName = pureName.strip()
-                        
+
                         # For All+, if there's more than one group we have to check through all of them for near-duplicates.
                         if len(groupCount) > 0:
 
                             # For each key in groupCount, try to get a match.
                             for gKey in groupCount.keys():
-                                tMatch = SequenceMatcher(None, pureName, gKey).find_longest_match(0, len(pureName), 0, len(gKey))
+                                tMatch = SequenceMatcher(None, pureName, gKey).find_longest_match(0, len(pureName), 0,
+                                                                                                  len(gKey))
 
                                 # If they are exactly equal, add one to the counter of that key.
                                 if pureName == gKey:
@@ -133,13 +139,13 @@ def varSearch(docs, field, newText):
                                         addName = punctuationRemover(pureName[tMatch.a: tMatch.a + tMatch.size])
                                         addName = addName.strip()
                                         groupCount[addName] = groupCount.pop(gKey)
-                                    
+
                                     # Same as above.
                                     else:
                                         addName = punctuationRemover(gKey[tMatch.b: tMatch.b + tMatch.size])
                                         addName = addName.strip()
                                         groupCount[addName] = groupCount[addName] + 1
-                               
+
                         else:
                             groupCount[pureName] = 1
 
@@ -147,13 +153,13 @@ def varSearch(docs, field, newText):
                         continue
 
                 lineCount += 1
-            
+
         # Skip this document since the field does not exist for it.
         except:
             continue
 
     print("Results:")
-    print("Total Found:", lineCount,"\n")
+    print("Total Found:", lineCount, "\n")
     print("All similar texts:\n")
 
     # Rare occassion that similarsearch does not find anything. No need to continue.
@@ -163,81 +169,56 @@ def varSearch(docs, field, newText):
 
     # Print out each dictionary item and how many times it was found/percentage of all
     # documents with that word or phrase.
-    for key,val in sorted(similarCount.items(), key = lambda kv:(kv[1], kv[0]), reverse = True):
-        print("Ratio: {:7s} Count: {:<5d} Text: {:40s}".format(str(round((val/lineCount*100),2))+"%",val, key))
-    
+    for key, val in sorted(similarCount.items(), key=lambda kv: (kv[1], kv[0]), reverse=True):
+        print("Ratio: {:7s} Count: {:<5d} Text: {:40s}".format(str(round((val / lineCount * 100), 2)) + "%", val, key))
+
     print()
     print("The group(s) of similar topics.\n")
 
     # Print out each topic and how many variations they have each.
-    for key,val in sorted(groupCount.items(), key = lambda kv:(kv[1], kv[0]), reverse = True):
+    for key, val in sorted(groupCount.items(), key=lambda kv: (kv[1], kv[0]), reverse=True):
         print("Group: {:40s} Variations: {:1d}".format(key, val))
         print()
 
     # This section is just to confirm what will be changed in the main collection.
-    choice = input("All of the above (unless field is location) will be changed to \"" + newText + "\" is that ok? (Yes or No): ")
+    choice = input(
+        "[MODE CHOICE]\n[1] Auto Change to \"" + newText + "\" \n[2] Auto Change to something NEW! \n[3] Manually Change to New Text \n[4] Quit \nMODE[1,2,3,4]: ")
 
-    if choice.upper() == "YES":
-        docReplacer(doClone, field, groupCount)
-    exit()
+    # Choice 1 will automatically change all of the above to the search value.
+    # Choice 2 will automatically change all of the above to the user specified value.
+    if choice == "1" or choice == "2":
+        x = 1
+        if choice == "2":
+            newText = input("Enter NewText that you want: ")
+        for key, val in sorted(similarCount.items(), key=lambda kv: (kv[1], kv[0]), reverse=True):
+            while x != 0:
+                myquery = {field: key}
+                newvalues = {"$set": {field: newText}}
+                client = MongoClient('mongodb://34.73.180.107:27017')
+                db = client.smartcareer
+                col = db['Clean']
+                x = col.update_many(myquery, newvalues)
+                print(x.modified_count, "documents updated.")
+                if x.modified_count == 0:
+                    break
+            # docReplacer(doClone, field, groupCount)
+        exit()
 
-# This method receives all MongoDB documents, the field, and groupCount which holds the standardized name
-# and re-uploads a clean standardized dataset to MongoDB.
-def docReplacer(doClone, field, groupCount):
-    count = 0
-    client = MongoClient('34.73.180.107:27017', 27017)
-    db = client['smartcareer']
-    collection = db['CleanBackup']
-    replacement = ' '.join(groupCount.keys())
-    match = ' '.join(groupCount.keys())
-
-    # Replace all variations with one standardized word or phrase.
-    for doc in doClone:
-
-        if field == "Location":
-            citySplit = replacement.split(",")
-            match = citySplit[0]
-            replacement = match + "," + citySplit[1].upper() + "," + citySplit[2].upper()
-
-        # This document must be standardized.
-        try: 
-            if match in doc[field]:
-                count += 1
-                #If the field doesn't exist (older document), then skip it.
-                doc[field] = replacement
-                toUpdate = doc['_id']
-                docUpdate = { '_id': toUpdate}
-                updateLine = { "$set": { field: replacement } }
-
-                # This document is new, but it needed to be standardized.
-                try:
-                    collection.insert_one(doc)
-                    print("This new document was standardized!:", count)
-
-                # This document has already been inserted, but another field needed to be standardized.
-                except pymongo.errors.DuplicateKeyError:
-                    collection.update_one(docUpdate, updateLine)
-                    print("A field has been updated!:", count)
-
-            # This document does not need to be standardized.
-            else:
-                count += 1
-                #Completely new document being added.
-                try:
-                    collection.insert_one(doc)
-                    print("New document inserted!:", count)
-
-                # This document is up to date, do not touch.
-                except pymongo.errors.DuplicateKeyError:
-                    print("No update needed.", count)
-                    continue
-
-        except:
-            count += 1
-            continue
-
-    doClone.close()
-    print("Replacement Complete!")
-    exit()
+    # Choice 3 allows the user to manually submit changes after reviewing each document.
+    elif choice == "3":
+        for key, val in sorted(similarCount.items(), key=lambda kv: (kv[1], kv[0]), reverse=True):
+            while True:
+                print(key)
+                newText = input("Enter New Text: ")
+                myquery = {'Experience.Location': key}
+                newvalues = {"$set": {'Experience.$.Location': newText}}
+                client = MongoClient('mongodb://34.73.180.107:27017')
+                db = client.smartcareer
+                col = db['Clean']
+                x = col.update_many(myquery, newvalues)
+                print(x.modified_count, "documents updated.")
+                if x.modified_count == 0:
+                    break
+        exit()
 
 main()
