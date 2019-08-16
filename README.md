@@ -5,6 +5,7 @@
 + Thank you Jaesung for the update!
 + New options menu when updating documents.
 + Much faster replacement algorithm!
++ Re-enabled All+ for location.
 ### Removals:
 + JS_similarsearch.py was renamed to similarsearch.py for consistency.
 + Removed docReplacer function as the options do all of it faster.
